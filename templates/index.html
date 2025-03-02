@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Personal Assistant</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+        body.dark-mode {
+            background-color: #1e1e1e;
+            color: #f4f4f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        body.dark-mode .container {
+            background: #2c3e50;
+            color: #f4f4f9;
+        }
+        #conversation, #chat-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #fafafa;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        body.dark-mode #conversation, body.dark-mode #chat-box {
+            background-color: #34495e;
+            border-color: #444;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: 20%;
+            text-align: right;
+        }
+        body.dark-mode .user-message {
+            background-color: #1c3f60;
+        }
+        .bot-message {
+            background-color: #f5f5f5;
+            margin-right: 20%;
+        }
+        body.dark-mode .bot-message {
+            background-color: #3b536b;
+        }
+        .chat-message {
+            background-color: #e8f5e9;
+            margin-left: 20%;
+            text-align: right;
+        }
+        body.dark-mode .chat-message {
+            background-color: #2e7d32;
+        }
+        .message button {
+            margin-left: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .message button:hover {
+            background: #0056b3;
+        }
+        #input-area, #chat-input-area {
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        body.dark-mode textarea {
+            background-color: #34495e;
+            border-color: #444;
+            color: #f4f4f9;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .voice-customization, #tone-adjustment, #voice-selection, #analysis, #conversation-analysis, #ocr-section {
+            margin-bottom: 20px;
+        }
+        .voice-customization label, #tone-adjustment label, #voice-selection label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .voice-customization input[type="range"], select {
+            width: 100%;
+        }
+        .voice-customization span {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+        #tone-adjusted-message, #recommendations, #conversation-analysis-result, #extracted-text {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .dark-mode-toggle:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Personal Assistant</h1>
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+            <i class="fas fa-moon"></i>
+        </button>
+        <div id="conversation"></div>
+        <div id="input-area">
+            <label for="user-input">Enter your message:</label><br>
+            <textarea id="user-input" placeholder="Type your message here..."></textarea><br>
+            <button id="send-button">Send</button>
+            <button id="clear-button">Clear Conversation</button>
+        </div>
+        <div class="voice-customization">
+            <h2>Voice Customization</h2>
+            <label for="pitch">Pitch:</label>
+            <input type="range" id="pitch" min="-50%" max="50%" value="0%" step="10%">
+            <span id="pitch-value">0%</span>
+            <label for="rate">Rate:</label>
+            <input type="range" id="rate" min="0.5" max="2.0" value="1.0" step="0.1">
+            <span id="rate-value">1.0</span>
+            <button id="preview-voice-button">Preview Voice</button>
+        </div>
+        <div id="tone-adjustment">
+            <label for="tone">Select tone:</label>
+            <select id="tone">
+                <option value="professional">Professional</option>
+                <option value="friendly">Friendly</option>
+                <option value="casual">Casual</option>
+            </select>
+            <button id="adjust-tone-button">Adjust Tone</button>
+            <div id="tone-adjusted-message"></div>
+        </div>
+        <div id="voice-selection">
+            <label for="voice">Select voice:</label>
+            <select id="voice">
+                <option value="zu-ZA-ThandoNeural">Zulu - Thando</option>
+                <option value="af-ZA-AdriNeural">Afrikaans - Adri</option>
+                <option value="en-GB-RyanNeural">British English - Ryan</option>
+                <option value="en-US-JennyNeural">US English - Jenny</option>
+                <option value="en-AU-NatashaNeural">Australian English - Natasha</option>
+            </select>
+        </div>
+        <div id="analysis">
+            <h2>Analysis</h2>
+            <button id="analyze-button">Analyze Conversation</button>
+            <div id="recommendations"></div>
+        </div>
+        <div id="conversation-analysis">
+            <h2>Conversation Analysis</h2>
+            <label for="analysis-input">Paste email or conversation:</label><br>
+            <textarea id="analysis-input" rows="8" placeholder="Paste your conversation here..."></textarea><br>
+            <button id="analyze-conversation-button">Analyze</button>
+            <div id="conversation-analysis-result"></div>
+        </div>
+        <div id="ocr-section">
+            <h2>Extract Text from Image</h2>
+            <input type="file" id="image-upload" accept="image/*"><br>
+            <button id="extract-text-button">Extract Text</button>
+            <div id="extracted-text"></div>
+        </div>
+        <div id="chat-section">
+            <h2>Chat with Others</h2>
+            <div id="chat-box"></div>
+            <div id="chat-input-area">
+                <input type="text" id="username" placeholder="Your name">
+                <textarea id="chat-input" placeholder="Type your chat message here..."></textarea><br>
+                <button id="send-chat-button">Send</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            let conversationHistory = [];
+            let chatMessages = [];
+
+            function toggleDarkMode() {
+                $('body').toggleClass('dark-mode');
+                const isDarkMode = $('body').hasClass('dark-mode');
+                localStorage.setItem('darkMode', isDarkMode);
+                $('.dark-mode-toggle i').toggleClass('fa-moon fa-sun');
+            }
+
+            if (localStorage.getItem('darkMode') === 'true') {
+                toggleDarkMode();
+            }
+
+            $('#send-button').click(function() {
+                const userInput = $('#user-input').val().trim();
+                if (!userInput) return;
+                $('#send-button').html('Sending... <div class="loading"></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '/generate',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ input: userInput }),
+                    success: function(data) {
+                        conversationHistory.push({ type: "User", text: userInput });
+                        conversationHistory.push({ type: "Bot", text: data.response });
+                        updateConversationDisplay();
+                        $('#user-input').val('');
+                        $('#send-button').html('Send');
+                    },
+                    error: function() {
+                        alert('Failed to send message. Please try again.');
+                        $('#send-button').html('Send');
+                    }
+                });
+            });
+
+            $('#clear-button').click(function() {
+                conversationHistory = [];
+                updateConversationDisplay();
+            });
+
+            $('#preview-voice-button').click(function() {
+                const previewText = "This is a preview of the current voice settings.";
+                const selectedVoiceName = $('#voice').val();
+                const pitch = $('#pitch').val() + "%";
+                const rate = $('#rate').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '/synthesize',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ text: previewText, voice_name: selectedVoiceName, pitch: pitch, rate: rate }),
+                    success: function(data) {
+                        new Audio('/audio/' + data.audio_file).play().catch(() => alert('Failed to play audio.'));
+                    },
+                    error: function() {
+                        alert('Speech synthesis failed. Please try again.');
+                    }
+                });
+            });
+
+            $('#adjust-tone-button').click(function() {
+                const message = $('#user-input').val().trim();
+                const tone = $('#tone').val();
+                if (!message) return;
+                $('#adjust-tone-button').html('Adjusting... <div class="loading"></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '/tone',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ message: message, tone: tone }),
+                    success: function(data) {
+                        $('#tone-adjusted-message').html(`<strong>Adjusted Message:</strong> ${data.adjusted_message}`);
+                        $('#adjust-tone-button').html('Adjust Tone');
+                    },
+                    error: function() {
+                        alert('Failed to adjust tone. Please try again.');
+                        $('#adjust-tone-button').html('Adjust Tone');
+                    }
+                });
+            });
+
+            $('#analyze-button').click(function() {
+                const conversationText = conversationHistory.map(item => `${item.type}: ${item.text}`).join('\n');
+                if (!conversationText) return;
+                $('#analyze-button').html('Analyzing... <div class="loading"></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '/analyze',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ conversation: conversationText }),
+                    success: function(data) {
+                        $('#recommendations').html(`<strong>Recommendations:</strong><br>${data.recommendations.replace(/\n/g, '<br>')}`);
+                        $('#analyze-button').html('Analyze Conversation');
+                    },
+                    error: function() {
+                        alert('Failed to analyze conversation. Please try again.');
+                        $('#analyze-button').html('Analyze Conversation');
+                    }
+                });
+            });
+
+            $('#analyze-conversation-button').click(function() {
+                const conversationText = $('#analysis-input').val().trim();
+                if (!conversationText) return;
+                $('#analyze-conversation-button').html('Analyzing... <div class="loading"></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '/analyze_conversation',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ conversation_text: conversationText }),
+                    success: function(data) {
+                        $('#conversation-analysis-result').html(`<strong>Analysis:</strong><br>${data.analysis}`);
+                        $('#analyze-conversation-button').html('Analyze');
+                    },
+                    error: function() {
+                        alert('Failed to analyze conversation. Please try again.');
+                        $('#analyze-conversation-button').html('Analyze');
+                    }
+                });
+            });
+
+            $('#extract-text-button').click(function() {
+                const fileInput = $('#image-upload')[0];
+                if (!fileInput.files.length) {
+                    alert('Please select an image file.');
+                    return;
+                }
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+                $('#extract-text-button').html('Extracting... <div class="loading"></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '/extract_text',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        $('#extracted-text').html(`<strong>Extracted Text:</strong><br>${data.extracted_text.replace(/\n/g, '<br>')}`);
+                        $('#extract-text-button').html('Extract Text');
+                    },
+                    error: function() {
+                        alert('Failed to extract text. Please try again.');
+                        $('#extract-text-button').html('Extract Text');
+                    }
+                });
+            });
+
+            $('#send-chat-button').click(function() {
+                const username = $('#username').val().trim() || 'Anonymous';
+                const message = $('#chat-input').val().trim();
+                if (!message) return;
+                $('#send-chat-button').html('Sending... <div class="loading"></div>');
+                $.ajax({
+                    type: 'POST',
+                    url: '/send_message',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username: username, message: message }),
+                    success: function(data) {
+                        if (data.status === 'Message sent successfully') {
+                            $('#chat-input').val('');
+                            fetchChatMessages();
+                        }
+                        $('#send-chat-button').html('Send');
+                    },
+                    error: function() {
+                        alert('Failed to send message. Please try again.');
+                        $('#send-chat-button').html('Send');
+                    }
+                });
+            });
+
+            function fetchChatMessages() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/get_messages',
+                    success: function(data) {
+                        chatMessages = data.messages;
+                        updateChatDisplay();
+                    },
+                    error: function() {
+                        alert('Failed to fetch chat messages. Please try again.');
+                    }
+                });
+            }
+
+            function updateConversationDisplay() {
+                $('#conversation').html(conversationHistory.map((item, index) => `
+                    <div class="message ${item.type === "User" ? "user-message" : "bot-message"}">
+                        ${item.text}
+                        <button onclick="playTextToSpeech(${index})">Listen</button>
+                        <button onclick="copyToClipboard('${item.text}')">Copy to Clipboard</button>
+                    </div>
+                `).join('')).scrollTop($('#conversation')[0].scrollHeight);
+            }
+
+            function updateChatDisplay() {
+                $('#chat-box').html(chatMessages.map(msg => `
+                    <div class="message chat-message">
+                        <strong>${msg.username}:</strong> ${msg.message} <em>(${msg.timestamp})</em>
+                    </div>
+                `).join('')).scrollTop($('#chat-box')[0].scrollHeight);
+            }
+
+            window.copyToClipboard = function(text) {
+                navigator.clipboard.writeText(text).then(() => alert('Text copied to clipboard')).catch(() => alert('Failed to copy text to clipboard. Please try again.'));
+            }
+
+            window.playTextToSpeech = function(index) {
+                const text = conversationHistory[index].text;
+                const selectedVoiceName = $('#voice').val();
+                const pitch = $('#pitch').val() + "%";
+                const rate = $('#rate').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '/synthesize',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ text: text, voice_name: selectedVoiceName, pitch: pitch, rate: rate }),
+                    success: function(data) {
+                        new Audio('/audio/' + data.audio_file).play().catch(() => alert('Failed to play audio.'));
+                    },
+                    error: function() {
+                        alert('Speech synthesis failed. Please try again.');
+                    }
+                });
+            }
+
+            // Fetch chat messages every 2 seconds
+            setInterval(fetchChatMessages, 2000);
+
+            // Initial fetch
+            fetchChatMessages();
+        });
+    </script>
+</body>
+</html>
