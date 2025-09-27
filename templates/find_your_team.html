@@ -1,0 +1,2487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Team - Maximize Human Potential</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="/static/js/communication.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            --primary-color: #667eea;
+            --secondary-color: #4facfe;
+            --accent-color: #f093fb;
+            --success-color: #43e97b;
+            --warning-color: #fee140;
+            --danger-color: #fa709a;
+            
+            --text-primary: #1a1a2e;
+            --text-secondary: #6c757d;
+            --text-light: #ffffff;
+            --text-muted: #8e9aaf;
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-dark: #1a1a2e;
+            --bg-glass: rgba(255, 255, 255, 0.1);
+            --bg-glass-dark: rgba(0, 0, 0, 0.1);
+            
+            --border-radius-sm: 8px;
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --border-radius-xl: 32px;
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.16);
+            --shadow-xl: 0 24px 96px rgba(0, 0, 0, 0.24);
+            
+            --blur: blur(20px);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* Glassmorphism effects */
+        .glass {
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-dark {
+            background: var(--bg-glass-dark);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hero Section - Absolutely Stunning */
+        .hero {
+            position: relative;
+            text-align: center;
+            padding: 120px 20px 80px;
+            color: var(--text-light);
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            font-weight: 400;
+            opacity: 0.95;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .hero-stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 8px;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Container and Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        /* Revolutionary Card Design */
+        .card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 40px;
+            margin-bottom: 40px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--border-radius);
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        /* Revolutionary Chat Interface */
+        .chat-container {
+            height: 500px;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-messages {
+            height: 100%;
+            overflow-y: auto;
+            padding: 24px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+
+        .message {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: messageSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-message {
+            flex-direction: row-reverse;
+        }
+
+        .user-message .message-avatar {
+            background: var(--primary-gradient);
+            color: var(--text-light);
+        }
+
+        .agent-message .message-avatar {
+            background: var(--success-gradient);
+            color: var(--text-light);
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 16px 20px;
+            border-radius: var(--border-radius-lg);
+            position: relative;
+            font-size: 15px;
+            line-height: 1.6;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-message .message-content {
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            border-bottom-right-radius: 8px;
+        }
+
+        .agent-message .message-content {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            border-bottom-left-radius: 8px;
+        }
+
+        .message-content strong {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Confidence Score with Animation */
+        .confidence-score {
+            background: var(--success-gradient);
+            color: var(--text-light);
+            padding: 8px 16px;
+            border-radius: var(--border-radius-xl);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            animation: pulse 2s infinite;
+        }
+
+        .confidence-score i {
+            font-size: 12px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Revolutionary Input Design */
+        .input-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            padding: 20px 24px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: var(--border-radius-lg);
+            font-size: 16px;
+            font-family: inherit;
+            resize: none;
+            min-height: 80px;
+            max-height: 200px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-group textarea::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: 8px;
+            right: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Revolutionary Button Design */
+        .btn {
+            padding: 16px 32px;
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            border: none;
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            min-width: 140px;
+            text-decoration: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .btn:disabled {
+            background: linear-gradient(135deg, #ccc 0%, #999 100%);
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-gradient);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            border-color: transparent;
+        }
+
+        .btn-lg {
+            padding: 20px 40px;
+            font-size: 18px;
+            border-radius: var(--border-radius-xl);
+        }
+
+        .btn-sm {
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+
+        /* Stunning Progress Bar */
+        .progress-container {
+            margin: 32px 0;
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: var(--border-radius-xl);
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border-radius: var(--border-radius-xl);
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        /* Spectacular Match Cards */
+        .matches-container {
+            display: none;
+        }
+
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 32px;
+            margin-top: 32px;
+        }
+
+        .match-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-xl);
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .match-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--success-gradient);
+        }
+
+        .match-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .match-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .match-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--border-radius-lg);
+            background: var(--success-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--text-light);
+            box-shadow: var(--shadow);
+        }
+
+        .match-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .match-scores {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .score-badge {
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            padding: 12px 20px;
+            border-radius: var(--border-radius-xl);
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-badge.alignment {
+            background: var(--success-gradient);
+        }
+
+        .score-badge.growth {
+            background: var(--warning-gradient);
+            color: var(--text-primary);
+        }
+
+        .match-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        .match-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .match-tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: var(--border-radius);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Spectacular Team Dashboard */
+        .team-section {
+            display: none;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .metric-card {
+            background: var(--bg-primary);
+            padding: 32px 24px;
+            border-radius: var(--border-radius-xl);
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .metric-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--text-light);
+            font-size: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .metric-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .metric-trend {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+        }
+
+        .metric-trend.up {
+            background: rgba(67, 233, 123, 0.1);
+            color: var(--success-color);
+        }
+
+        .metric-trend.down {
+            background: rgba(250, 112, 154, 0.1);
+            color: var(--danger-color);
+        }
+
+        .metric-trend.stable {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* Advanced Loading Animations */
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .loading-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Advanced Animations */
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .status-online .status-dot {
+            background: var(--success-color);
+            box-shadow: 0 0 0 2px rgba(67, 233, 123, 0.3);
+            animation: pulse-green 2s infinite;
+        }
+
+        .status-offline .status-dot {
+            background: #ccc;
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(67, 233, 123, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(67, 233, 123, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(67, 233, 123, 0); }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        .scale-in {
+            animation: scaleIn 0.4s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .matches-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 80px 20px 60px;
+            }
+            
+            .hero h1 {
+                font-size: clamp(2.5rem, 6vw, 4rem);
+            }
+            
+            .hero-subtitle {
+                font-size: clamp(1rem, 2.5vw, 1.4rem);
+            }
+            
+            .hero-stats {
+                gap: 40px;
+            }
+            
+            .container {
+                padding: 0 16px;
+            }
+            
+            .card {
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .match-scores {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-stats {
+                flex-direction: column;
+                gap: 24px;
+            }
+            
+            .floating-element {
+                display: none;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-primary: #ffffff;
+                --text-secondary: #b0b0b0;
+                --bg-primary: #1a1a2e;
+                --bg-secondary: #16213e;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast support */
+        @media (prefers-contrast: high) {
+            .card {
+                border: 2px solid var(--text-primary);
+            }
+            
+            .btn {
+                border: 2px solid var(--text-light);
+            }
+        }
+
+        /* Confetti Animation */
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Notification Styles */
+        .notification-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: var(--transition);
+            opacity: 0.8;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Additional Micro-interactions */
+        .card-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .metric-card:hover .metric-icon {
+            transform: scale(1.1);
+        }
+
+        .match-card:hover .match-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .btn:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading states */
+        .btn:disabled {
+            pointer-events: none;
+        }
+
+        .btn:disabled .loading-spinner {
+            border-color: rgba(255, 255, 255, 0.3);
+            border-top-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Scroll indicators */
+        .chat-messages {
+            scroll-padding-top: 20px;
+        }
+
+        /* Enhanced focus states for accessibility */
+        .input-group textarea:focus,
+        .btn:focus,
+        .card:focus-within {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Connection Status Styles */
+        .connection-status {
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin: 16px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+            transition: var(--transition);
+        }
+
+        .status-dot.connected {
+            background: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(67, 233, 123, 0.3);
+            animation: pulse-green 2s infinite;
+        }
+
+        .status-dot.disconnected {
+            background: var(--danger-color);
+        }
+
+        .protocol-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .protocol {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: var(--border-radius-sm);
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            transition: var(--transition);
+        }
+
+        .protocol.connected {
+            background: rgba(67, 233, 123, 0.2);
+            color: var(--success-color);
+        }
+
+        .protocol.disconnected {
+            background: rgba(250, 112, 154, 0.2);
+            color: var(--danger-color);
+        }
+
+        .protocol.connecting {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--primary-color);
+        }
+
+        .queue-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .queue-status .queue-count {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* Print styles */
+        @media print {
+            .hero,
+            .floating-elements,
+            #particles-js,
+            .btn,
+            .input-group,
+            .connection-status {
+                display: none !important;
+            }
+            
+            .card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+        
+        <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+            <h1>Find Your Team</h1>
+            <p class="hero-subtitle">
+                Maximize human potential by connecting people with their purpose and the teams where they can add the most value to the people they love.
+            </p>
+            
+            <div class="status-indicator status-online" data-aos="fade-up" data-aos-delay="200">
+                <div class="status-dot"></div>
+                <span>Platform Online - Helping Communities Worldwide</span>
+            </div>
+            
+            <div class="hero-stats" data-aos="fade-up" data-aos-delay="400">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">10,247</span>
+                    <span class="hero-stat-label">People Connected</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">1,834</span>
+                    <span class="hero-stat-label">Teams Formed</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">89%</span>
+                    <span class="hero-stat-label">Success Rate</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">156</span>
+                    <span class="hero-stat-label">Communities Served</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Onboarding Section -->
+        <div class="section">
+            <div class="card" id="onboarding-section" data-aos="fade-up" data-aos-duration="800">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <div>
+                        <h2>Discover Your Purpose</h2>
+                        <p class="card-subtitle">Let's have a conversation to understand your values, passions, and how you want to make a difference in the world.</p>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span class="progress-text">Purpose Profile Confidence</span>
+                        <span class="progress-percentage" id="confidence-text">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="confidence-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="onboarding-chat">
+                        <div class="message agent-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <strong>Your AI Guide</strong>
+                                Welcome to Find Your Team! I'm here to help you discover your unique purpose and connect you with opportunities where you can make the biggest impact.
+                                <br><br>
+                                Let's start with something important: What drives you? What makes you feel most alive and fulfilled when you're doing it?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <textarea id="onboarding-input" placeholder="Share what's on your heart... What do you care deeply about?" maxlength="1000"></textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span>/1000
+                        </div>
+                    </div>
+                    <button class="btn btn-lg" id="send-onboarding" onclick="sendOnboardingMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Send</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Matching Section -->
+        <div class="section">
+            <div class="card matches-container" id="matching-section" data-aos="fade-up" data-aos-duration="800">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div>
+                        <h2>Your Perfect Matches</h2>
+                        <p class="card-subtitle">Based on your purpose profile, here are teams and opportunities where you can make the greatest impact</p>
+                    </div>
+                </div>
+                
+                <div class="matches-grid" id="matches-results">
+                    <!-- Matches will be populated here -->
+                </div>
+
+                <div style="text-align: center; margin-top: 32px;">
+                    <button class="btn btn-success btn-lg" onclick="findMatches()">
+                        <i class="fas fa-search"></i>
+                        <span>Find My Teams</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Performance Section -->
+        <div class="section">
+            <div class="card team-section" id="team-section" data-aos="fade-up" data-aos-duration="800">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h2>Team Performance Dashboard</h2>
+                        <p class="card-subtitle">Real-time insights into your team's performance and growth opportunities</p>
+                    </div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card" data-aos="zoom-in" data-aos-delay="100">
+                        <div class="metric-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="metric-value" id="productivity-metric">--</div>
+                        <div class="metric-label">Productivity</div>
+                        <div class="metric-trend up" id="productivity-trend">↗ +15%</div>
+                    </div>
+                    <div class="metric-card" data-aos="zoom-in" data-aos-delay="200">
+                        <div class="metric-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="metric-value" id="collaboration-metric">--</div>
+                        <div class="metric-label">Collaboration</div>
+                        <div class="metric-trend up" id="collaboration-trend">↗ +8%</div>
+                    </div>
+                    <div class="metric-card" data-aos="zoom-in" data-aos-delay="300">
+                        <div class="metric-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="metric-value" id="satisfaction-metric">--</div>
+                        <div class="metric-label">Satisfaction</div>
+                        <div class="metric-trend stable" id="satisfaction-trend">→ Stable</div>
+                    </div>
+                    <div class="metric-card" data-aos="zoom-in" data-aos-delay="400">
+                        <div class="metric-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="metric-value" id="impact-metric">--</div>
+                        <div class="metric-label">Community Impact</div>
+                        <div class="metric-trend up" id="impact-trend">↗ +23%</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 16px; justify-content: center; margin-top: 40px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="generateRetrospective()">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Generate Retrospective</span>
+                    </button>
+                    <button class="btn btn-warning" onclick="getCoachingInsight()">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Get Coaching Insight</span>
+                    </button>
+                </div>
+
+                <div id="retrospective-results" style="margin-top: 32px;"></div>
+                <div id="coaching-results" style="margin-top: 32px;"></div>
+            </div>
+        </div>
+        
+        <!-- Communication Status Section -->
+        <div class="section">
+            <div class="card" data-aos="fade-up" data-aos-duration="800">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-satellite-dish"></i>
+                    </div>
+                    <div>
+                        <h2>Communication Status</h2>
+                        <p class="card-subtitle">Real-time connection status across all protocols</p>
+                    </div>
+                </div>
+                
+                <div id="connection-status-container">
+                    <!-- Connection status will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Impact Section -->
+        <div class="section">
+            <div class="card" data-aos="fade-up" data-aos-duration="800">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div>
+                        <h2>Global Impact</h2>
+                        <p class="card-subtitle">See how Find Your Team is maximizing human potential worldwide</p>
+                    </div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card" data-aos="zoom-in" data-aos-delay="100">
+                        <div class="metric-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="metric-value">10,247</div>
+                        <div class="metric-label">People Connected</div>
+                        <div class="metric-trend up">↗ +1,234 this month</div>
+                    </div>
+                    <div class="metric-card" data-aos="zoom-in" data-aos-delay="200">
+                        <div class="metric-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="metric-value">1,834</div>
+                        <div class="metric-label">Teams Formed</div>
+                        <div class="metric-trend up">↗ +156 this month</div>
+                    </div>
+                    <div class="metric-card" data-aos="zoom-in" data-aos-delay="300">
+                        <div class="metric-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="metric-value">89%</div>
+                        <div class="metric-label">Success Rate</div>
+                        <div class="metric-trend up">↗ +2% this month</div>
+                    </div>
+                    <div class="metric-card" data-aos="zoom-in" data-aos-delay="400">
+                        <div class="metric-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="metric-value">156</div>
+                        <div class="metric-label">Communities Served</div>
+                        <div class="metric-trend up">↗ +12 this month</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let sessionId = null;
+        let currentUserProfile = null;
+        let currentTeamId = 'demo-team-001';
+        let communicationClient = null;
+        let connectionStatusIndicator = null;
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+        
+        function initializeApp() {
+            // Initialize AOS (Animate On Scroll)
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out',
+                once: true,
+                offset: 100
+            });
+            
+            // Initialize particles background
+            initializeParticles();
+            
+            // Initialize character counter
+            initializeCharCounter();
+            
+            // Initialize auto-resize for textarea
+            initializeAutoResize();
+            
+            // Add smooth scrolling for internal links
+            initializeSmoothScrolling();
+            
+            // Initialize communication system
+            initializeCommunication();
+        }
+        
+        function initializeParticles() {
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', {
+                    particles: {
+                        number: { value: 50, density: { enable: true, value_area: 800 } },
+                        color: { value: '#ffffff' },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.1, random: true },
+                        size: { value: 3, random: true },
+                        line_linked: {
+                            enable: true,
+                            distance: 150,
+                            color: '#ffffff',
+                            opacity: 0.1,
+                            width: 1
+                        },
+                        move: {
+                            enable: true,
+                            speed: 1,
+                            direction: 'none',
+                            random: false,
+                            straight: false,
+                            out_mode: 'out',
+                            bounce: false
+                        }
+                    },
+                    interactivity: {
+                        detect_on: 'canvas',
+                        events: {
+                            onhover: { enable: true, mode: 'repulse' },
+                            onclick: { enable: true, mode: 'push' },
+                            resize: true
+                        }
+                    },
+                    retina_detect: true
+                });
+            }
+        }
+        
+        function initializeCharCounter() {
+            const textarea = document.getElementById('onboarding-input');
+            const counter = document.getElementById('char-count');
+            
+            if (textarea && counter) {
+                textarea.addEventListener('input', function() {
+                    counter.textContent = this.value.length;
+                });
+            }
+        }
+        
+        function initializeAutoResize() {
+            const textarea = document.getElementById('onboarding-input');
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+                });
+            }
+        }
+        
+        function initializeSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        }
+        
+        function initializeCommunication() {
+            // Initialize communication client when user starts onboarding
+            if (typeof CommunicationClient !== 'undefined') {
+                // Will be initialized when sessionId is available
+                console.log('Communication system ready');
+            } else {
+                console.warn('Communication client not loaded');
+            }
+        }
+        
+        function setupCommunicationForUser(userId) {
+            if (!userId || communicationClient) return;
+            
+            try {
+                // Initialize communication client
+                communicationClient = new CommunicationClient(userId, {
+                    reconnectAttempts: 5,
+                    reconnectDelay: 2000
+                });
+                
+                // Add message handlers
+                communicationClient.addMessageHandler('chat', handleChatMessage);
+                communicationClient.addMessageHandler('system', handleSystemMessage);
+                communicationClient.addMessageHandler('*', handleAnyMessage);
+                
+                // Add status handler
+                communicationClient.addStatusHandler(handleConnectionStatus);
+                
+                // Request notification permission
+                communicationClient.requestNotificationPermission();
+                
+                console.log('Communication client initialized for user:', userId);
+                
+            } catch (error) {
+                console.error('Error setting up communication:', error);
+            }
+        }
+        
+        function handleChatMessage(message) {
+            // Add message to chat interface
+            addMessageToChat('onboarding-chat', message.content, 'agent');
+            
+            // Show notification if page is not visible
+            if (document.hidden) {
+                showNotification(`New message from ${message.sender_id}`, 'info');
+            }
+        }
+        
+        function handleSystemMessage(message) {
+            // Handle system messages (notifications, status updates, etc.)
+            showNotification(message.content, 'info');
+        }
+        
+        function handleAnyMessage(message) {
+            // Log all messages for debugging
+            console.log('Received message:', message);
+        }
+        
+        function handleConnectionStatus(status) {
+            // Update UI based on connection status
+            updateConnectionStatusUI(status);
+            
+            // Show notifications for connection changes
+            if (status.connected && status.queueSize > 0) {
+                showNotification(`Connected! Sending ${status.queueSize} queued messages.`, 'success');
+            } else if (!status.connected) {
+                showNotification('Connection lost. Messages will be queued for delivery.', 'warning');
+            }
+        }
+        
+        function updateConnectionStatusUI(status) {
+            // Update the status indicator in the hero section
+            const statusIndicator = document.querySelector('.status-indicator');
+            if (statusIndicator) {
+                const dot = statusIndicator.querySelector('.status-dot');
+                const text = statusIndicator.querySelector('span');
+                
+                if (status.connected) {
+                    dot.className = 'status-dot status-online';
+                    text.textContent = `Platform Online - ${status.bestProtocol.toUpperCase()} Connected`;
+                } else {
+                    dot.className = 'status-dot status-offline';
+                    text.textContent = 'Offline Mode - Messages Queued';
+                }
+            }
+        }
+
+        function sendOnboardingMessage() {
+            const input = document.getElementById('onboarding-input');
+            const message = input.value.trim();
+            
+            if (!message) {
+                showNotification('Please enter a message', 'warning');
+                return;
+            }
+
+            // Add user message to chat with animation
+            addMessageToChat('onboarding-chat', message, 'user');
+            input.value = '';
+            document.getElementById('char-count').textContent = '0';
+            input.style.height = 'auto';
+
+            // Update send button with loading state
+            const sendBtn = document.getElementById('send-onboarding');
+            const originalContent = sendBtn.innerHTML;
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>Thinking...</span>
+                </div>
+            `;
+
+            // Send to backend
+            fetch('/api/onboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    session_id: sessionId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                sessionId = data.session_id;
+                
+                // Initialize communication system for this user
+                if (!communicationClient) {
+                    setupCommunicationForUser(sessionId);
+                    
+                    // Initialize connection status indicator
+                    setTimeout(() => {
+                        if (typeof ConnectionStatusIndicator !== 'undefined') {
+                            connectionStatusIndicator = new ConnectionStatusIndicator(
+                                'connection-status-container', 
+                                communicationClient
+                            );
+                        }
+                    }, 1000);
+                }
+                
+                // Add agent response to chat with animation
+                setTimeout(() => {
+                    addMessageToChat('onboarding-chat', data.response, 'agent', data.confidence_score);
+                    
+                    // Update confidence score with animation
+                    updateConfidenceScore(data.confidence_score);
+                    
+                    // If ready for matching, show matching section
+                    if (data.ready_for_matching) {
+                        currentUserProfile = data.user_profile;
+                        showMatchingSection();
+                        showNotification('🎉 Profile complete! Ready to find your perfect team matches.', 'success');
+                    }
+                }, 500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                setTimeout(() => {
+                    addMessageToChat('onboarding-chat', 'Sorry, I had trouble processing that. Could you try again?', 'agent');
+                    showNotification('Connection error. Please try again.', 'error');
+                }, 500);
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = originalContent;
+                }, 1000);
+            });
+        }
+
+        function addMessageToChat(chatId, message, type, confidenceScore = null) {
+            const chat = document.getElementById(chatId);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            
+            if (type === 'user') {
+                avatar.innerHTML = '<i class="fas fa-user"></i>';
+                content.innerHTML = `<strong>You</strong>${message}`;
+            } else {
+                avatar.innerHTML = '<i class="fas fa-robot"></i>';
+                content.innerHTML = `<strong>Your AI Guide</strong>${message}`;
+                
+                if (confidenceScore !== null) {
+                    const scoreDiv = document.createElement('div');
+                    scoreDiv.className = 'confidence-score';
+                    scoreDiv.innerHTML = `
+                        <i class="fas fa-chart-line"></i>
+                        Confidence: ${confidenceScore}%
+                    `;
+                    content.appendChild(scoreDiv);
+                }
+            }
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            // Add with animation
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(20px)';
+            chat.appendChild(messageDiv);
+            
+            // Trigger animation
+            requestAnimationFrame(() => {
+                messageDiv.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                messageDiv.style.opacity = '1';
+                messageDiv.style.transform = 'translateY(0)';
+            });
+            
+            // Smooth scroll to bottom
+            chat.scrollTo({
+                top: chat.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        function updateConfidenceScore(score) {
+            const progressFill = document.getElementById('confidence-progress');
+            const progressText = document.getElementById('confidence-text');
+            
+            // Animate progress bar
+            progressFill.style.width = score + '%';
+            progressText.textContent = score + '%';
+            
+            // Add color coding based on score
+            progressFill.style.background = score >= 90 ? 
+                'var(--success-gradient)' : 
+                score >= 70 ? 'var(--warning-gradient)' : 'var(--primary-gradient)';
+            
+            // Add celebration effect for high scores
+            if (score >= 90) {
+                createConfetti();
+            }
+        }
+        
+        function createConfetti() {
+            // Simple confetti effect
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.cssText = `
+                        position: fixed;
+                        width: 10px;
+                        height: 10px;
+                        background: ${['#667eea', '#764ba2', '#f093fb', '#43e97b'][Math.floor(Math.random() * 4)]};
+                        top: -10px;
+                        left: ${Math.random() * 100}vw;
+                        z-index: 9999;
+                        pointer-events: none;
+                        animation: confetti-fall 3s linear forwards;
+                    `;
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+        }
+
+        function findMatches() {
+            if (!sessionId) {
+                showNotification('Please complete the onboarding process first.', 'warning');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('matches-results');
+            const loadingHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div class="loading">
+                        <div class="loading-dots">
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px; color: var(--text-secondary);">Finding your perfect matches...</p>
+                </div>
+            `;
+            resultsDiv.innerHTML = loadingHTML;
+
+            fetch('/api/match', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    session_id: sessionId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                setTimeout(() => {
+                    resultsDiv.innerHTML = `
+                        <div class="match-card" data-aos="fade-up" data-aos-delay="100">
+                            <div class="match-header">
+                                <div class="match-icon">🌍</div>
+                                <h3 class="match-title">Community Development Team</h3>
+                            </div>
+                            <div class="match-scores">
+                                <span class="score-badge alignment">
+                                    <i class="fas fa-heart"></i> Alignment: 94%
+                                </span>
+                                <span class="score-badge growth">
+                                    <i class="fas fa-chart-line"></i> Growth: 15%
+                                </span>
+                            </div>
+                            <div class="match-tags">
+                                <span class="match-tag">Clean Water</span>
+                                <span class="match-tag">Sustainability</span>
+                                <span class="match-tag">Community Impact</span>
+                            </div>
+                            <p class="match-description">Help underserved communities access clean water and sustainable agriculture. Your passion for helping others and technical skills make you perfect for this impact-driven team.</p>
+                            <button class="btn btn-success" onclick="joinTeam('community-dev-001')">
+                                <i class="fas fa-handshake"></i> Join This Team
+                            </button>
+                        </div>
+                        <div class="match-card" data-aos="fade-up" data-aos-delay="200">
+                            <div class="match-header">
+                                <div class="match-icon">💡</div>
+                                <h3 class="match-title">Education Technology Initiative</h3>
+                            </div>
+                            <div class="match-scores">
+                                <span class="score-badge alignment">
+                                    <i class="fas fa-heart"></i> Alignment: 87%
+                                </span>
+                                <span class="score-badge growth">
+                                    <i class="fas fa-chart-line"></i> Growth: 25%
+                                </span>
+                            </div>
+                            <div class="match-tags">
+                                <span class="match-tag">Education</span>
+                                <span class="match-tag">Technology</span>
+                                <span class="match-tag">Rural Schools</span>
+                            </div>
+                            <p class="match-description">Build digital learning platforms for rural schools. Combine your tech skills with your desire to make education accessible to everyone.</p>
+                            <button class="btn btn-success" onclick="joinTeam('edtech-002')">
+                                <i class="fas fa-handshake"></i> Join This Team
+                            </button>
+                        </div>
+                        <div class="match-card" data-aos="fade-up" data-aos-delay="300">
+                            <div class="match-header">
+                                <div class="match-icon">🏥</div>
+                                <h3 class="match-title">Healthcare Access Project</h3>
+                            </div>
+                            <div class="match-scores">
+                                <span class="score-badge alignment">
+                                    <i class="fas fa-heart"></i> Alignment: 91%
+                                </span>
+                                <span class="score-badge growth">
+                                    <i class="fas fa-chart-line"></i> Growth: 20%
+                                </span>
+                            </div>
+                            <div class="match-tags">
+                                <span class="match-tag">Healthcare</span>
+                                <span class="match-tag">Telemedicine</span>
+                                <span class="match-tag">Remote Care</span>
+                            </div>
+                            <p class="match-description">Develop telemedicine solutions for remote communities. Your values align perfectly with bringing healthcare to those who need it most.</p>
+                            <button class="btn btn-success" onclick="joinTeam('healthcare-003')">
+                                <i class="fas fa-handshake"></i> Join This Team
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Reinitialize AOS for new elements
+                    AOS.refresh();
+                    
+                    showNotification('🎯 Found 3 perfect matches for you!', 'success');
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger-color); margin-bottom: 16px;"></i>
+                        <p>Sorry, we had trouble finding matches. Please try again.</p>
+                        <button class="btn btn-outline" onclick="findMatches()" style="margin-top: 16px;">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+                showNotification('Error finding matches. Please try again.', 'error');
+            });
+        }
+        
+        function showMatchingSection() {
+            const section = document.getElementById('matching-section');
+            section.style.display = 'block';
+            section.classList.add('fade-in');
+            setTimeout(() => {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+
+        function joinTeam(teamId) {
+            currentTeamId = teamId;
+            
+            // Join team communication channel
+            if (communicationClient) {
+                communicationClient.joinTeam(teamId);
+            }
+            
+            // Show joining animation
+            showNotification('🎉 Welcome to the team! Your Team Agent is now active.', 'success');
+            
+            // Simulate joining team and show performance metrics
+            setTimeout(() => {
+                updateTeamMetrics();
+                showTeamSection();
+            }, 1000);
+        }
+        
+        function showTeamSection() {
+            const section = document.getElementById('team-section');
+            section.style.display = 'block';
+            section.classList.add('fade-in');
+            setTimeout(() => {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Add styles
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                background: ${type === 'success' ? 'var(--success-gradient)' : 
+                           type === 'error' ? 'var(--danger-gradient)' : 
+                           type === 'warning' ? 'var(--warning-gradient)' : 'var(--primary-gradient)'};
+                color: ${type === 'warning' ? 'var(--text-primary)' : 'var(--text-light)'};
+                padding: 16px 20px;
+                border-radius: var(--border-radius-lg);
+                box-shadow: var(--shadow-lg);
+                transform: translateX(400px);
+                transition: var(--transition);
+                max-width: 400px;
+                word-wrap: break-word;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            requestAnimationFrame(() => {
+                notification.style.transform = 'translateX(0)';
+            });
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.transform = 'translateX(400px)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        function updateTeamMetrics() {
+            // Animate metrics with counting effect
+            animateCounter('productivity-metric', 87, '%');
+            animateCounter('collaboration-metric', 92, '%');
+            animateCounter('satisfaction-metric', 89, '%');
+            animateCounter('impact-metric', 156, '');
+        }
+        
+        function animateCounter(elementId, targetValue, suffix = '') {
+            const element = document.getElementById(elementId);
+            const startValue = 0;
+            const duration = 2000;
+            const startTime = performance.now();
+            
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function for smooth animation
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                const currentValue = Math.round(startValue + (targetValue - startValue) * easeOutQuart);
+                
+                element.textContent = currentValue + suffix;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            
+            requestAnimationFrame(updateCounter);
+        }
+
+        function generateRetrospective() {
+            const resultsDiv = document.getElementById('retrospective-results');
+            resultsDiv.innerHTML = '<div class="loading"></div> Generating retrospective...';
+
+            fetch(`/api/team/${currentTeamId}/retrospective`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    period: '30'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                resultsDiv.innerHTML = `
+                    <div class="card">
+                        <h3>📊 30-Day Team Retrospective</h3>
+                        <div style="margin: 20px 0;">
+                            <h4>🎉 Achievements</h4>
+                            <ul>
+                                <li>Delivered clean water access to 3 new communities</li>
+                                <li>Maintained 92% team collaboration score</li>
+                                <li>Exceeded productivity targets by 15%</li>
+                            </ul>
+                        </div>
+                        <div style="margin: 20px 0;">
+                            <h4>🎯 Areas for Growth</h4>
+                            <ul>
+                                <li>Improve cross-cultural communication</li>
+                                <li>Streamline project handoff processes</li>
+                            </ul>
+                        </div>
+                        <div style="margin: 20px 0;">
+                            <h4>💡 Recommendations</h4>
+                            <ul>
+                                <li>Schedule weekly cultural exchange sessions</li>
+                                <li>Implement standardized project documentation</li>
+                                <li>Celebrate small wins more frequently</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = '<p>Unable to generate retrospective at this time.</p>';
+            });
+        }
+
+        function getCoachingInsight() {
+            const resultsDiv = document.getElementById('coaching-results');
+            resultsDiv.innerHTML = '<div class="loading"></div> Generating personalized coaching...';
+
+            fetch(`/api/user/${sessionId}/coaching`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    context: {
+                        team_id: currentTeamId,
+                        recent_performance: {
+                            productivity: 0.87,
+                            collaboration: 0.92,
+                            satisfaction: 0.89
+                        }
+                    }
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                resultsDiv.innerHTML = `
+                    <div class="card">
+                        <h3>🎯 Your Personal Coaching Insights</h3>
+                        <div style="margin: 20px 0;">
+                            <h4>💪 Your Strengths</h4>
+                            <p>You excel at collaborative problem-solving and bringing diverse perspectives together. Your passion for community impact drives exceptional results.</p>
+                        </div>
+                        <div style="margin: 20px 0;">
+                            <h4>🚀 Growth Opportunities</h4>
+                            <ul>
+                                <li>Develop technical project management skills</li>
+                                <li>Practice public speaking for community presentations</li>
+                                <li>Learn data analysis to measure impact more effectively</li>
+                            </ul>
+                        </div>
+                        <div style="margin: 20px 0;">
+                            <h4>📋 Next Steps</h4>
+                            <ul>
+                                <li>Enroll in a project management certification course</li>
+                                <li>Join the local Toastmasters chapter</li>
+                                <li>Partner with the data analyst on your team for mentoring</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = '<p>Unable to generate coaching insights at this time.</p>';
+            });
+        }
+
+        function generateRetrospective() {
+            const resultsDiv = document.getElementById('retrospective-results');
+            resultsDiv.innerHTML = `
+                <div class="loading" style="justify-content: center; padding: 20px;">
+                    <div class="loading-spinner"></div>
+                    <span style="margin-left: 12px;">Generating retrospective...</span>
+                </div>
+            `;
+
+            fetch(`/api/team/${currentTeamId}/retrospective`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ period: '30' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                setTimeout(() => {
+                    resultsDiv.innerHTML = `
+                        <div class="card" data-aos="fade-up">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div>
+                                    <h3>30-Day Team Retrospective</h3>
+                                    <p class="card-subtitle">Insights and recommendations for your team</p>
+                                </div>
+                            </div>
+                            <div style="display: grid; gap: 24px;">
+                                <div>
+                                    <h4 style="color: var(--success-color); margin-bottom: 12px;">
+                                        <i class="fas fa-trophy"></i> Achievements
+                                    </h4>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li style="padding: 8px 0; border-left: 4px solid var(--success-color); padding-left: 16px; margin-bottom: 8px;">
+                                            Delivered clean water access to 3 new communities
+                                        </li>
+                                        <li style="padding: 8px 0; border-left: 4px solid var(--success-color); padding-left: 16px; margin-bottom: 8px;">
+                                            Maintained 92% team collaboration score
+                                        </li>
+                                        <li style="padding: 8px 0; border-left: 4px solid var(--success-color); padding-left: 16px;">
+                                            Exceeded productivity targets by 15%
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 style="color: var(--warning-color); margin-bottom: 12px;">
+                                        <i class="fas fa-target"></i> Areas for Growth
+                                    </h4>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li style="padding: 8px 0; border-left: 4px solid var(--warning-color); padding-left: 16px; margin-bottom: 8px;">
+                                            Improve cross-cultural communication
+                                        </li>
+                                        <li style="padding: 8px 0; border-left: 4px solid var(--warning-color); padding-left: 16px;">
+                                            Streamline project handoff processes
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 style="color: var(--primary-color); margin-bottom: 12px;">
+                                        <i class="fas fa-lightbulb"></i> Recommendations
+                                    </h4>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li style="padding: 8px 0; border-left: 4px solid var(--primary-color); padding-left: 16px; margin-bottom: 8px;">
+                                            Schedule weekly cultural exchange sessions
+                                        </li>
+                                        <li style="padding: 8px 0; border-left: 4px solid var(--primary-color); padding-left: 16px; margin-bottom: 8px;">
+                                            Implement standardized project documentation
+                                        </li>
+                                        <li style="padding: 8px 0; border-left: 4px solid var(--primary-color); padding-left: 16px;">
+                                            Celebrate small wins more frequently
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    AOS.refresh();
+                    showNotification('📊 Retrospective generated successfully!', 'success');
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = '<p style="text-align: center; color: var(--danger-color);">Unable to generate retrospective at this time.</p>';
+                showNotification('Error generating retrospective', 'error');
+            });
+        }
+
+        function getCoachingInsight() {
+            const resultsDiv = document.getElementById('coaching-results');
+            resultsDiv.innerHTML = `
+                <div class="loading" style="justify-content: center; padding: 20px;">
+                    <div class="loading-spinner"></div>
+                    <span style="margin-left: 12px;">Generating personalized coaching...</span>
+                </div>
+            `;
+
+            fetch(`/api/user/${sessionId}/coaching`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    context: {
+                        team_id: currentTeamId,
+                        recent_performance: { productivity: 0.87, collaboration: 0.92, satisfaction: 0.89 }
+                    }
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                setTimeout(() => {
+                    resultsDiv.innerHTML = `
+                        <div class="card" data-aos="fade-up">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div>
+                                    <h3>Your Personal Coaching Insights</h3>
+                                    <p class="card-subtitle">Tailored recommendations for your growth</p>
+                                </div>
+                            </div>
+                            <div style="display: grid; gap: 24px;">
+                                <div style="background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(67, 233, 123, 0.05) 100%); padding: 20px; border-radius: var(--border-radius); border-left: 4px solid var(--success-color);">
+                                    <h4 style="color: var(--success-color); margin-bottom: 12px;">
+                                        <i class="fas fa-star"></i> Your Strengths
+                                    </h4>
+                                    <p>You excel at collaborative problem-solving and bringing diverse perspectives together. Your passion for community impact drives exceptional results.</p>
+                                </div>
+                                <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%); padding: 20px; border-radius: var(--border-radius); border-left: 4px solid var(--primary-color);">
+                                    <h4 style="color: var(--primary-color); margin-bottom: 12px;">
+                                        <i class="fas fa-rocket"></i> Growth Opportunities
+                                    </h4>
+                                    <ul style="margin: 0; padding-left: 20px;">
+                                        <li>Develop technical project management skills</li>
+                                        <li>Practice public speaking for community presentations</li>
+                                        <li>Learn data analysis to measure impact more effectively</li>
+                                    </ul>
+                                </div>
+                                <div style="background: linear-gradient(135deg, rgba(254, 225, 64, 0.1) 0%, rgba(254, 225, 64, 0.05) 100%); padding: 20px; border-radius: var(--border-radius); border-left: 4px solid var(--warning-color);">
+                                    <h4 style="color: #f57c00; margin-bottom: 12px;">
+                                        <i class="fas fa-tasks"></i> Next Steps
+                                    </h4>
+                                    <ul style="margin: 0; padding-left: 20px;">
+                                        <li>Enroll in a project management certification course</li>
+                                        <li>Join the local Toastmasters chapter</li>
+                                        <li>Partner with the data analyst on your team for mentoring</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    AOS.refresh();
+                    showNotification('💡 Coaching insights ready!', 'success');
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = '<p style="text-align: center; color: var(--danger-color);">Unable to generate coaching insights at this time.</p>';
+                showNotification('Error generating coaching insights', 'error');
+            });
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Allow Enter key to send messages
+            const input = document.getElementById('onboarding-input');
+            if (input) {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendOnboardingMessage();
+                    }
+                });
+            }
+        });
+
+        // Service Worker registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                        showNotification('✅ App ready for offline use!', 'success');
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

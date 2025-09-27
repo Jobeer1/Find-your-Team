@@ -8,177 +8,124 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
             color: #333;
-            transition: background-color 0.3s ease;
-        }
-        body.dark-mode {
-            background-color: #1e1e1e;
-            color: #f4f4f9;
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: #fff;
             padding: 20px;
+            background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        body.dark-mode .container {
-            background: #2c3e50;
-            color: #f4f4f9;
+        h1, h2 {
+            color: #444;
         }
-        #conversation, #chat-box {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 20px;
-            height: 300px;
-            overflow-y: auto;
-            background-color: #fafafa;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
+        .dark-mode {
+            background-color: #333;
+            color: #f9f9f9;
         }
-        body.dark-mode #conversation, body.dark-mode #chat-box {
-            background-color: #34495e;
-            border-color: #444;
-        }
-        .message {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 8px;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .user-message {
-            background-color: #e3f2fd;
-            margin-left: 20%;
-            text-align: right;
-        }
-        body.dark-mode .user-message {
-            background-color: #1c3f60;
-        }
-        .bot-message {
-            background-color: #f5f5f5;
-            margin-right: 20%;
-        }
-        body.dark-mode .bot-message {
-            background-color: #3b536b;
-        }
-        .chat-message {
-            background-color: #e8f5e9;
-            margin-left: 20%;
-            text-align: right;
-        }
-        body.dark-mode .chat-message {
-            background-color: #2e7d32;
-        }
-        .message button {
-            margin-left: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .message button:hover {
-            background: #0056b3;
-        }
-        #input-area, #chat-input-area {
-            margin-bottom: 20px;
-        }
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            resize: vertical;
-            min-height: 100px;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-        body.dark-mode textarea {
-            background-color: #34495e;
-            border-color: #444;
-            color: #f4f4f9;
-        }
-        button {
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s ease;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        .voice-customization, #tone-adjustment, #voice-selection, #analysis, #conversation-analysis, #ocr-section {
-            margin-bottom: 20px;
-        }
-        .voice-customization label, #tone-adjustment label, #voice-selection label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .voice-customization input[type="range"], select {
-            width: 100%;
-        }
-        .voice-customization span {
-            display: inline-block;
-            margin-left: 10px;
-            font-size: 14px;
-            color: #555;
-        }
-        #tone-adjusted-message, #recommendations, #conversation-analysis-result, #extracted-text {
-            margin-top: 10px;
-            padding: 10px;
-            background: #f1f1f1;
-            border-radius: 8px;
-        }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .dark-mode .container {
+            background-color: #444;
+            color: #f9f9f9;
         }
         .dark-mode-toggle {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #007bff;
-            color: white;
+            background: none;
             border: none;
-            padding: 10px;
-            border-radius: 50%;
             cursor: pointer;
-            transition: background 0.3s ease;
+            font-size: 24px;
+            color: #444;
         }
-        .dark-mode-toggle:hover {
-            background: #0056b3;
+        .dark-mode .dark-mode-toggle {
+            color: #f9f9f9;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+        }
+        .message.user-message {
+            background-color: #e3f2fd;
+        }
+        .message.bot-message {
+            background-color: #fff3e0;
+        }
+        .message.chat-message {
+            background-color: #f9f9f9;
+            border-left: 4px solid #007bff;
+        }
+        .message strong {
+            color: #007bff;
+        }
+        .message em {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .icon-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-top: 10px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .section h2 {
+            margin-top: 0;
         }
     </style>
 </head>
@@ -188,69 +135,150 @@
         <button class="dark-mode-toggle" onclick="toggleDarkMode()">
             <i class="fas fa-moon"></i>
         </button>
-        <div id="conversation"></div>
-        <div id="input-area">
-            <label for="user-input">Enter your message:</label><br>
-            <textarea id="user-input" placeholder="Type your message here..."></textarea><br>
+
+        <!-- Conversation Section -->
+        <div class="section">
+            <h2>Conversation</h2>
+            <div id="conversation"></div>
+            <div class="form-group">
+                <label for="user-input">Enter your message:</label>
+                <textarea id="user-input" placeholder="Type your message here..."></textarea>
+            </div>
             <button id="send-button">Send</button>
             <button id="clear-button">Clear Conversation</button>
         </div>
-        <div class="voice-customization">
+
+        <!-- Task Automation Section -->
+        <div class="section">
+            <h2>Task Automation</h2>
+            <div id="task-list"></div>
+            <button id="add-task-button">Add Task</button>
+            <button id="start-tasks-button">Start Tasks</button>
+            <button id="stop-tasks-button">Stop Tasks</button>
+            <button id="pause-tasks-button">Pause Tasks</button>
+            <button id="resume-tasks-button">Resume Tasks</button>
+        </div>
+
+        <!-- Notification Interval Section -->
+        <div class="section">
+            <h2>Notification Interval</h2>
+            <div class="form-group">
+                <label for="interval-input">Check for new messages every (seconds):</label>
+                <input type="number" id="interval-input" min="1" value="10">
+            </div>
+            <button id="set-interval-button">Set Interval</button>
+        </div>
+
+        <!-- Area of Interest Section -->
+        <div class="section">
+            <h2>Area of Interest</h2>
+            <div class="form-group">
+                <label for="x1">Top-left X:</label>
+                <input type="number" id="x1" min="0" value="0">
+                <label for="y1">Top-left Y:</label>
+                <input type="number" id="y1" min="0" value="0">
+                <label for="x2">Bottom-right X:</label>
+                <input type="number" id="x2" min="0" value="100">
+                <label for="y2">Bottom-right Y:</label>
+                <input type="number" id="y2" min="0" value="100">
+            </div>
+            <button id="set-area-button">Set Area of Interest</button>
+        </div>
+
+        <!-- Message Icon Section -->
+        <div class="section">
+            <h2>Message Icon</h2>
+            <div class="form-group">
+                <label for="icon-path">Icon Path:</label>
+                <input type="text" id="icon-path" placeholder="Enter icon file path">
+                <label for="icon-size">Icon Size:</label>
+                <input type="number" id="icon-size" min="16" value="32">
+            </div>
+            <button id="set-icon-button">Set Message Icon</button>
+            <div id="icon-preview" class="icon-preview"></div>
+        </div>
+
+        <!-- Voice Customization Section -->
+        <div class="section">
             <h2>Voice Customization</h2>
-            <label for="pitch">Pitch:</label>
-            <input type="range" id="pitch" min="-50%" max="50%" value="0%" step="10%">
-            <span id="pitch-value">0%</span>
-            <label for="rate">Rate:</label>
-            <input type="range" id="rate" min="0.5" max="2.0" value="1.0" step="0.1">
-            <span id="rate-value">1.0</span>
+            <div class="form-group">
+                <label for="pitch">Pitch:</label>
+                <input type="range" id="pitch" min="-50%" max="50%" value="0%" step="10%">
+                <span id="pitch-value">0%</span>
+                <label for="rate">Rate:</label>
+                <input type="range" id="rate" min="0.5" max="2.0" value="1.0" step="0.1">
+                <span id="rate-value">1.0</span>
+            </div>
             <button id="preview-voice-button">Preview Voice</button>
         </div>
-        <div id="tone-adjustment">
-            <label for="tone">Select tone:</label>
-            <select id="tone">
-                <option value="professional">Professional</option>
-                <option value="friendly">Friendly</option>
-                <option value="casual">Casual</option>
-            </select>
+
+        <!-- Tone Adjustment Section -->
+        <div class="section">
+            <h2>Tone Adjustment</h2>
+            <div class="form-group">
+                <label for="tone">Select tone:</label>
+                <select id="tone">
+                    <option value="professional">Professional</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="casual">Casual</option>
+                </select>
+            </div>
             <button id="adjust-tone-button">Adjust Tone</button>
             <div id="tone-adjusted-message"></div>
         </div>
-        <div id="voice-selection">
-            <label for="voice">Select voice:</label>
-            <select id="voice">
-                <option value="zu-ZA-ThandoNeural">Zulu - Thando</option>
-                <option value="af-ZA-AdriNeural">Afrikaans - Adri</option>
-                <option value="en-GB-RyanNeural">British English - Ryan</option>
-                <option value="en-US-JennyNeural">US English - Jenny</option>
-                <option value="en-AU-NatashaNeural">Australian English - Natasha</option>
-            </select>
+
+        <!-- Voice Selection Section -->
+        <div class="section">
+            <h2>Voice Selection</h2>
+            <div class="form-group">
+                <label for="voice">Select voice:</label>
+                <select id="voice">
+                    <option value="zu-ZA-ThandoNeural">Zulu - Thando</option>
+                    <option value="af-ZA-AdriNeural">Afrikaans - Adri</option>
+                    <option value="en-GB-RyanNeural">British English - Ryan</option>
+                    <option value="en-US-JennyNeural">US English - Jenny</option>
+                    <option value="en-AU-NatashaNeural">Australian English - Natasha</option>
+                </select>
+            </div>
         </div>
-        <div id="analysis">
+
+        <!-- Analysis Section -->
+        <div class="section">
             <h2>Analysis</h2>
             <button id="analyze-button">Analyze Conversation</button>
             <div id="recommendations"></div>
         </div>
-        <div id="conversation-analysis">
+
+        <!-- Conversation Analysis Section -->
+        <div class="section">
             <h2>Conversation Analysis</h2>
-            <label for="analysis-input">Paste email or conversation:</label><br>
-            <textarea id="analysis-input" rows="8" placeholder="Paste your conversation here..."></textarea><br>
+            <div class="form-group">
+                <label for="analysis-input">Paste email or conversation:</label>
+                <textarea id="analysis-input" rows="8" placeholder="Paste your conversation here..."></textarea>
+            </div>
             <button id="analyze-conversation-button">Analyze</button>
             <div id="conversation-analysis-result"></div>
         </div>
-        <div id="ocr-section">
+
+        <!-- OCR Section -->
+        <div class="section">
             <h2>Extract Text from Image</h2>
-            <input type="file" id="image-upload" accept="image/*"><br>
+            <div class="form-group">
+                <input type="file" id="image-upload" accept="image/*">
+            </div>
             <button id="extract-text-button">Extract Text</button>
             <div id="extracted-text"></div>
         </div>
-        <div id="chat-section">
+
+        <!-- Chat Section -->
+        <div class="section">
             <h2>Chat with Others</h2>
             <div id="chat-box"></div>
-            <div id="chat-input-area">
+            <div class="form-group">
                 <input type="text" id="username" placeholder="Your name">
-                <textarea id="chat-input" placeholder="Type your chat message here..."></textarea><br>
-                <button id="send-chat-button">Send</button>
+                <textarea id="chat-input" placeholder="Type your chat message here..."></textarea>
             </div>
+            <button id="send-chat-button">Send</button>
         </div>
     </div>
     <script>
@@ -258,6 +286,7 @@
             let conversationHistory = [];
             let chatMessages = [];
 
+            // Dark mode toggle
             function toggleDarkMode() {
                 $('body').toggleClass('dark-mode');
                 const isDarkMode = $('body').hasClass('dark-mode');
@@ -268,6 +297,207 @@
             if (localStorage.getItem('darkMode') === 'true') {
                 toggleDarkMode();
             }
+
+            // Task Automation Functions
+            function fetchTasks() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/get_tasks',
+                    success: function(data) {
+                        $('#task-list').html(data.tasks.map((task, index) => `
+                            <div class="task">
+                                <strong>Task ${index + 1}:</strong> ${task.type} - ${JSON.stringify(task)}
+                                <button onclick="removeTask(${index})">Remove</button>
+                            </div>
+                        `).join(''));
+                    },
+                    error: function() {
+                        alert('Failed to fetch tasks. Please try again.');
+                    }
+                });
+            }
+
+            window.removeTask = function(index) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/remove_task',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ index: index }),
+                    success: function() {
+                        fetchTasks();
+                    },
+                    error: function() {
+                        alert('Failed to remove task. Please try again.');
+                    }
+                });
+            }
+
+            $('#add-task-button').click(function() {
+                const taskType = prompt("Enter task type (click/hotkey/move):");
+                if (!taskType) return;
+
+                let taskData = {};
+                if (taskType === "click") {
+                    const x = prompt("Enter X coordinate:");
+                    const y = prompt("Enter Y coordinate:");
+                    const delay = prompt("Enter delay (seconds):");
+                    taskData = { type: "click", x: parseInt(x), y: parseInt(y), delay: parseFloat(delay) };
+                } else if (taskType === "hotkey") {
+                    const hotkey = prompt("Enter hotkey (e.g., ctrl+c):");
+                    const delay = prompt("Enter delay (seconds):");
+                    taskData = { type: "hotkey", hotkey: hotkey, delay: parseFloat(delay) };
+                } else if (taskType === "move") {
+                    const startX = prompt("Enter start X coordinate:");
+                    const startY = prompt("Enter start Y coordinate:");
+                    const endX = prompt("Enter end X coordinate:");
+                    const endY = prompt("Enter end Y coordinate:");
+                    const delay = prompt("Enter delay (seconds):");
+                    taskData = { type: "move", startX: parseInt(startX), startY: parseInt(startY), endX: parseInt(endX), endY: parseInt(endY), delay: parseFloat(delay) };
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/add_task',
+                    contentType: 'application/json',
+                    data: JSON.stringify(taskData),
+                    success: function() {
+                        fetchTasks();
+                    },
+                    error: function() {
+                        alert('Failed to add task. Please try again.');
+                    }
+                });
+            });
+
+            $('#start-tasks-button').click(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/start_tasks',
+                    success: function() {
+                        alert('Tasks started.');
+                    },
+                    error: function() {
+                        alert('Failed to start tasks. Please try again.');
+                    }
+                });
+            });
+
+            $('#stop-tasks-button').click(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/stop_tasks',
+                    success: function() {
+                        alert('Tasks stopped.');
+                    },
+                    error: function() {
+                        alert('Failed to stop tasks. Please try again.');
+                    }
+                });
+            });
+
+            $('#pause-tasks-button').click(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/pause_tasks',
+                    success: function() {
+                        alert('Tasks paused.');
+                    },
+                    error: function() {
+                        alert('Failed to pause tasks. Please try again.');
+                    }
+                });
+            });
+
+            $('#resume-tasks-button').click(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/resume_tasks',
+                    success: function() {
+                        alert('Tasks resumed.');
+                    },
+                    error: function() {
+                        alert('Failed to resume tasks. Please try again.');
+                    }
+                });
+            });
+
+            // Set Notification Interval
+            $('#set-interval-button').click(function() {
+                const interval = $('#interval-input').val();
+                if (!interval || interval < 1) {
+                    alert('Please enter a valid interval (minimum 1 second).');
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/set_notification_interval',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ interval: parseInt(interval) }),
+                    success: function() {
+                        alert('Notification interval updated.');
+                    },
+                    error: function() {
+                        alert('Failed to set notification interval. Please try again.');
+                    }
+                });
+            });
+
+            // Set Area of Interest
+            $('#set-area-button').click(function() {
+                const x1 = $('#x1').val();
+                const y1 = $('#y1').val();
+                const x2 = $('#x2').val();
+                const y2 = $('#y2').val();
+
+                if (!x1 || !y1 || !x2 || !y2) {
+                    alert('Please enter all coordinates.');
+                    return;
+                }
+
+                const area = { x1: parseInt(x1), y1: parseInt(y1), x2: parseInt(x2), y2: parseInt(y2) };
+                $.ajax({
+                    type: 'POST',
+                    url: '/set_area_of_interest',
+                    contentType: 'application/json',
+                    data: JSON.stringify(area),
+                    success: function() {
+                        alert('Area of interest updated.');
+                    },
+                    error: function() {
+                        alert('Failed to set area of interest. Please try again.');
+                    }
+                });
+            });
+
+            // Set Message Icon
+            $('#set-icon-button').click(function() {
+                const iconPath = $('#icon-path').val();
+                const iconSize = $('#icon-size').val();
+
+                if (!iconPath || !iconSize) {
+                    alert('Please enter both icon path and size.');
+                    return;
+                }
+
+                const iconSettings = { icon_path: iconPath, icon_size: parseInt(iconSize) };
+                $.ajax({
+                    type: 'POST',
+                    url: '/set_message_icon',
+                    contentType: 'application/json',
+                    data: JSON.stringify(iconSettings),
+                    success: function() {
+                        alert('Message icon updated.');
+                        $('#icon-preview').html(`<img src="${iconPath}" alt="Message Icon" style="width: ${iconSize}px; height: ${iconSize}px;">`);
+                    },
+                    error: function() {
+                        alert('Failed to set message icon. Please try again.');
+                    }
+                });
+            });
+
+            // Initial fetch of tasks
+            fetchTasks();
 
             $('#send-button').click(function() {
                 const userInput = $('#user-input').val().trim();

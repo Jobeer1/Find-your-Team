@@ -1,0 +1,1177 @@
+{
+ "Resources": {
+  "UserProfilesTableF49D814C": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "primarySkill",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "confidenceScore",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "SkillsIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "primarySkill",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "confidenceScore",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "userId",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "FindYourTeam-UserProfiles"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/UserProfilesTable/Resource"
+   }
+  },
+  "TeamPerformanceTable76E1D335": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "teamId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "timestamp",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "teamId",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "timestamp",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "FindYourTeam-TeamPerformance"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/TeamPerformanceTable/Resource"
+   }
+  },
+  "FindYourTeamSearch6A46EE18": {
+   "Type": "AWS::OpenSearchService::Domain",
+   "Properties": {
+    "AdvancedOptions": {
+     "override_main_response_version": "true",
+     "rest.action.multi.allow_explicit_index": "true"
+    },
+    "ClusterConfig": {
+     "DedicatedMasterEnabled": false,
+     "InstanceCount": 1,
+     "InstanceType": "t3.small.search",
+     "ZoneAwarenessEnabled": false
+    },
+    "DomainEndpointOptions": {
+     "EnforceHTTPS": false,
+     "TLSSecurityPolicy": "Policy-Min-TLS-1-2-2019-07"
+    },
+    "DomainName": "findyourteam-search",
+    "EBSOptions": {
+     "EBSEnabled": true,
+     "VolumeSize": 10,
+     "VolumeType": "gp2"
+    },
+    "EncryptionAtRestOptions": {
+     "Enabled": false
+    },
+    "EngineVersion": "OpenSearch_2.11",
+    "LogPublishingOptions": {},
+    "NodeToNodeEncryptionOptions": {
+     "Enabled": false
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamSearch/Resource"
+   }
+  },
+  "FindYourTeamSearchAccessPolicyCC26D851": {
+   "Type": "Custom::OpenSearchAccessPolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"action\":\"updateDomainConfig\",\"service\":\"OpenSearch\",\"parameters\":{\"DomainName\":\"",
+       {
+        "Ref": "FindYourTeamSearch6A46EE18"
+       },
+       "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"AWS\\\":\\\"*\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
+       {
+        "Ref": "FindYourTeamSearch6A46EE18"
+       },
+       "AccessPolicy\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"action\":\"updateDomainConfig\",\"service\":\"OpenSearch\",\"parameters\":{\"DomainName\":\"",
+       {
+        "Ref": "FindYourTeamSearch6A46EE18"
+       },
+       "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"AWS\\\":\\\"*\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
+       {
+        "Ref": "FindYourTeamSearch6A46EE18"
+       },
+       "AccessPolicy\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "FindYourTeamSearchAccessPolicyCustomResourcePolicy36876574"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamSearch/AccessPolicy/Resource/Default"
+   }
+  },
+  "FindYourTeamSearchAccessPolicyCustomResourcePolicy36876574": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "es:UpdateDomainConfig",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FindYourTeamSearch6A46EE18",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FindYourTeamSearchAccessPolicyCustomResourcePolicy36876574",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamSearch/AccessPolicy/CustomResourcePolicy/Resource"
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource"
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "34a66902956b031404ef497526f619b900363fe7fd65ff02b1de4c30fe10c034.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+    "aws:asset:path": "asset.34a66902956b031404ef497526f619b900363fe7fd65ff02b1de4c30fe10c034",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "FindYourTeamAssets477C1FA6": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "findyourteam-assets-",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "-us-east-1"
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "IgnorePublicAcls": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ],
+    "WebsiteConfiguration": {
+     "IndexDocument": "index.html"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAssets/Resource"
+   }
+  },
+  "FindYourTeamAssetsPolicyE1A30F11": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "FindYourTeamAssets477C1FA6"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FindYourTeamAssets477C1FA6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "FindYourTeamAssets477C1FA6",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAssets/Policy/Resource"
+   }
+  },
+  "FindYourTeamAssetsAutoDeleteObjectsCustomResource71480DF8": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "FindYourTeamAssets477C1FA6"
+    }
+   },
+   "DependsOn": [
+    "FindYourTeamAssetsPolicyE1A30F11"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAssets/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "FindYourTeamAssets477C1FA6"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "FindYourTeamIoTPolicy": {
+   "Type": "AWS::IoT::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Effect": "Allow",
+       "Action": [
+        "iot:Connect",
+        "iot:Publish",
+        "iot:Subscribe",
+        "iot:Receive"
+       ],
+       "Resource": "*"
+      }
+     ]
+    },
+    "PolicyName": "FindYourTeamIoTPolicy"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamIoTPolicy"
+   }
+  },
+  "FindYourTeamLambdaRole20F931D0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "dynamodb:DeleteItem",
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:UpdateItem"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "TeamPerformanceTable76E1D335",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "UserProfilesTableF49D814C",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "TeamPerformanceTable76E1D335",
+               "Arn"
+              ]
+             },
+             "/index/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "UserProfilesTableF49D814C",
+               "Arn"
+              ]
+             },
+             "/index/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "bedrock:GetAgent",
+          "bedrock:InvokeAgent",
+          "bedrock:InvokeModel",
+          "bedrock:ListAgents",
+          "iot:Publish",
+          "iot:Subscribe"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        },
+        {
+         "Action": [
+          "es:ESHttpDelete",
+          "es:ESHttpGet",
+          "es:ESHttpPost",
+          "es:ESHttpPut"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "FindYourTeamSearch6A46EE18",
+              "Arn"
+             ]
+            },
+            "/*"
+           ]
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "FindYourTeamPolicy"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamLambdaRole/Resource"
+   }
+  },
+  "TeamAgentTools2418597A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "835e399919520e96a6e09adc4fe62885381e49937e1c9542d236e0213396f473.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "USER_PROFILES_TABLE": {
+       "Ref": "UserProfilesTableF49D814C"
+      },
+      "TEAM_PERFORMANCE_TABLE": {
+       "Ref": "TeamPerformanceTable76E1D335"
+      },
+      "OPENSEARCH_ENDPOINT": {
+       "Fn::GetAtt": [
+        "FindYourTeamSearch6A46EE18",
+        "DomainEndpoint"
+       ]
+      }
+     }
+    },
+    "FunctionName": "FindYourTeam-TeamAgentTools",
+    "Handler": "team_agent_tools.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "FindYourTeamLambdaRole20F931D0",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "FindYourTeamLambdaRole20F931D0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/TeamAgentTools/Resource",
+    "aws:asset:path": "asset.835e399919520e96a6e09adc4fe62885381e49937e1c9542d236e0213396f473",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "FindYourTeamAPI75A8B6DA": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "API for Find Your Team platform",
+    "Name": "FindYourTeam API"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Resource"
+   }
+  },
+  "FindYourTeamAPIDeployment7665CB1107b245292f6b54cd7da9d4f900af4847": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "API for Find Your Team platform",
+    "RestApiId": {
+     "Ref": "FindYourTeamAPI75A8B6DA"
+    }
+   },
+   "DependsOn": [
+    "FindYourTeamAPIOPTIONS40BC37FE",
+    "FindYourTeamAPIteamGETFA0CE3A5",
+    "FindYourTeamAPIteamOPTIONS921F394B",
+    "FindYourTeamAPIteamPOSTD8B87201",
+    "FindYourTeamAPIteam643DB420"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "FindYourTeamAPIDeploymentStageprod9779CB8A": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "FindYourTeamAPIDeployment7665CB1107b245292f6b54cd7da9d4f900af4847"
+    },
+    "RestApiId": {
+     "Ref": "FindYourTeamAPI75A8B6DA"
+    },
+    "StageName": "prod"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/DeploymentStage.prod/Resource"
+   }
+  },
+  "FindYourTeamAPIOPTIONS40BC37FE": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "FindYourTeamAPI75A8B6DA",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "FindYourTeamAPI75A8B6DA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/OPTIONS/Resource"
+   }
+  },
+  "FindYourTeamAPIteam643DB420": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "FindYourTeamAPI75A8B6DA",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "team",
+    "RestApiId": {
+     "Ref": "FindYourTeamAPI75A8B6DA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/team/Resource"
+   }
+  },
+  "FindYourTeamAPIteamOPTIONS921F394B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "FindYourTeamAPIteam643DB420"
+    },
+    "RestApiId": {
+     "Ref": "FindYourTeamAPI75A8B6DA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/team/OPTIONS/Resource"
+   }
+  },
+  "FindYourTeamAPIteamPOSTApiPermissionFindYourTeamStackFindYourTeamAPI0D89A743POSTteamE375E710": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TeamAgentTools2418597A",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "FindYourTeamAPI75A8B6DA"
+       },
+       "/",
+       {
+        "Ref": "FindYourTeamAPIDeploymentStageprod9779CB8A"
+       },
+       "/POST/team"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/team/POST/ApiPermission.FindYourTeamStackFindYourTeamAPI0D89A743.POST..team"
+   }
+  },
+  "FindYourTeamAPIteamPOSTApiPermissionTestFindYourTeamStackFindYourTeamAPI0D89A743POSTteamF4C331AB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TeamAgentTools2418597A",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "FindYourTeamAPI75A8B6DA"
+       },
+       "/test-invoke-stage/POST/team"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/team/POST/ApiPermission.Test.FindYourTeamStackFindYourTeamAPI0D89A743.POST..team"
+   }
+  },
+  "FindYourTeamAPIteamPOSTD8B87201": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "TeamAgentTools2418597A",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "FindYourTeamAPIteam643DB420"
+    },
+    "RestApiId": {
+     "Ref": "FindYourTeamAPI75A8B6DA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/team/POST/Resource"
+   }
+  },
+  "FindYourTeamAPIteamGETApiPermissionFindYourTeamStackFindYourTeamAPI0D89A743GETteam1A8AC651": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TeamAgentTools2418597A",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "FindYourTeamAPI75A8B6DA"
+       },
+       "/",
+       {
+        "Ref": "FindYourTeamAPIDeploymentStageprod9779CB8A"
+       },
+       "/GET/team"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/team/GET/ApiPermission.FindYourTeamStackFindYourTeamAPI0D89A743.GET..team"
+   }
+  },
+  "FindYourTeamAPIteamGETApiPermissionTestFindYourTeamStackFindYourTeamAPI0D89A743GETteam4298C5BE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TeamAgentTools2418597A",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "FindYourTeamAPI75A8B6DA"
+       },
+       "/test-invoke-stage/GET/team"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/team/GET/ApiPermission.Test.FindYourTeamStackFindYourTeamAPI0D89A743.GET..team"
+   }
+  },
+  "FindYourTeamAPIteamGETFA0CE3A5": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "TeamAgentTools2418597A",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "FindYourTeamAPIteam643DB420"
+    },
+    "RestApiId": {
+     "Ref": "FindYourTeamAPI75A8B6DA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamAPI/Default/team/GET/Resource"
+   }
+  },
+  "FindYourTeamDashboardB5EF85FC": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"DynamoDB Operations\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"ConsumedReadCapacityUnits\",\"TableName\",\"",
+       {
+        "Ref": "UserProfilesTableF49D814C"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/DynamoDB\",\"ConsumedWriteCapacityUnits\",\"TableName\",\"",
+       {
+        "Ref": "UserProfilesTableF49D814C"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/DynamoDB\",\"ConsumedReadCapacityUnits\",\"TableName\",\"",
+       {
+        "Ref": "TeamPerformanceTable76E1D335"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/DynamoDB\",\"ConsumedWriteCapacityUnits\",\"TableName\",\"",
+       {
+        "Ref": "TeamPerformanceTable76E1D335"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Lambda Performance\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Ref": "TeamAgentTools2418597A"
+       },
+       "\"],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Ref": "TeamAgentTools2418597A"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Ref": "TeamAgentTools2418597A"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "FindYourTeam-Metrics"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/FindYourTeamDashboard/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12QT2/CMAzFPwv3kG1w4Mwf7Tatgt2Rmxrq0cZVnFJVUb771LSjiJN/L7afn7LSq4+Nfl9AJ0tT3JYV5TqcPJibgk7Ooegt1FzkOvxAXqHaX2yCqLhBKwjOlILuTgZ1OHANZIeZkaKqoM4L0OFE9lqhZ/vZWuOJrXrA/mKfOUNXkwixjYqg1iHjikyfWiMdecwx1KhkfQYR9KK3Q1Gy1mHXmhv6HQiqEYfxicYymz7rqIi9ni9BQ1fw2EGvwxHFbxtKhyc8YFNxX6NN/k/q5OGaIo5wROHWGUyBvtCXXAzNif67k3PiqEzFbdGBN6UOB5AyZ3Bp6yFinFdNK57rs5u06G0n+/Q2u7/I+ZhKHzdEJXt9mcsc36lAl6LvL/a79U3ro8p6X7J9W+uPld4sfoVo6VrrqUZ9HOsfOPVnMlkCAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "FindYourTeamStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "FindYourTeamAPIEndpoint7973B671": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "FindYourTeamAPI75A8B6DA"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "FindYourTeamAPIDeploymentStageprod9779CB8A"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "UserProfilesTableName": {
+   "Value": {
+    "Ref": "UserProfilesTableF49D814C"
+   }
+  },
+  "TeamPerformanceTableName": {
+   "Value": {
+    "Ref": "TeamPerformanceTable76E1D335"
+   }
+  },
+  "OpenSearchEndpoint": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FindYourTeamSearch6A46EE18",
+     "DomainEndpoint"
+    ]
+   }
+  },
+  "APIEndpoint": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "FindYourTeamAPI75A8B6DA"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "FindYourTeamAPIDeploymentStageprod9779CB8A"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "AssetsBucket": {
+   "Value": {
+    "Ref": "FindYourTeamAssets477C1FA6"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
