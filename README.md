@@ -4,50 +4,48 @@
 
 Find Your Team is a free, open-source platform that ensures no human talent is wasted by connecting people with their purpose and the teams where they can add the most value to the people they love.
 
-## 🚀 Quick Start
+## 💔 The Problem: The Human Gap — The Obsolescence of the Soul
+We know, in our bones, what the world needs. We see the potential for thriving communities, true innovation, and a sustainable planet. But every day, that potential withers on the vine because we can't find our team. We are one-person armies, burning out in profound isolation.
 
-### 1. Get Your AWS Credentials
+## 1. The Agony of the Mismatch
+For a generation, we have been sold a tragic lie: that a fulfilling life is built on a static qualification—a piece of paper earned through years of debt, memorization, and relentless struggle in a field we didn't love.
 
-1. Go to [AWS IAM Console](https://console.aws.amazon.com/iam/home#/security_credentials)
-2. Create a new IAM user or use an existing one
-3. Attach these managed policies:
-   - `AmazonBedrockFullAccess`
-   - `AmazonDynamoDBFullAccess`
-   - `AmazonIoTCoreFullAccess`
-   - `CloudWatchFullAccess`
-   - `AmazonOpenSearchServiceFullAccess`
-4. Create access keys and note down:
-   - `Access Key ID`
-   - `Secret Access Key`
+**The Lost Years and The Unlived Life:** We spend our most vibrant years and mountains of money on subjects that feel hard, not because we lack capacity, but because they are not our calling. We endure the grinding punishment of studying for a future job we intuitively know we will hate, simply because it promises a paycheck.
 
-### 2. Configure the Application
+**The Daily Punishment of Work:** For millions, a "good-paying job" is a literal punishment—a monotonous, soul-sapping routine where we feel less like humans and more like poorly programmed bots. Our employers, colleagues, and clients sense the deep, corrosive conflict of interests. We are emotionally and spiritually exhausted, tired in a way sleep can't fix, because we are operating outside of our natural alignment.
 
-1. Copy the configuration template:
-   ```bash
-   cp config.ini.template config.ini
-   ```
+**The Silent Crisis of Unused Superpowers:** There is a brilliant, heart-aligned mind isolated from the vital teams that desperately need their specific genius. The world’s biggest problems are waiting for these connections to be made, but we are looking at stiff resumes, not true passion or committed heart.
 
-2. Edit `config.ini` and add your AWS credentials:
-   ```ini
-   [AWS]
-   aws_access_key_id = YOUR_ACCESS_KEY_ID_HERE
-   aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_HERE
-   aws_region = us-east-1
-   ```
+## 2. The Final Betrayal: AI and the Fraud of Generalists
+The rise of AI has exposed the ultimate failure of the old system: Static qualifications are now obsolete.
 
-### 3. Install Dependencies
+**The Illusion of Expertise is Over:** Any task involving pure data retrieval, predictable analysis, or repetitive content generation is now better, faster, and cheaper when done by a bot. The old system forces us to compete with AI at its own game—a game we are biologically not built to win.
 
-```bash
-pip install -r requirements.txt
-```
+**We Are Not Multi-Tools:** We are not built to do everything. We are not generic multi-tools, nice for a lot of tasks but never the best for any. We are precision instruments, and our power comes from our limitations and our specialization. By forcing us to chase generalist degrees, the old system actively robs us of the time and energy to hone our truly human skills: empathy, original thought, vision, and deep commitment.
 
-### 4. Run the Application
+## 3. The Grand Illusion: Why "Individual Excellence" Fails
+The current talent system is obsessed with collecting individual stars—the highest GPAs, the flashiest resumes—yet this strategy fails in the real world.
 
-```bash
-python app.py
-```
+**The Springbok Revelation:** The painful truth is that a team built of the best individuals will consistently be beaten by a team with the best chemistry. The Springbok coach, Rassie Erasmus, proved this globally: he deliberately chose players who could align their hearts, sacrifice their ego, and execute a shared, complex vision. They may not be the best at individual tasks, but their cohesion beats the world's most talented teams.
 
-Open http://localhost:5000 in your browser and start maximizing human potential!
+**The Corporate "Bomb Squad" that Never Forms:** In business and community projects, the investment in "talent" delivers only mediocrity because individuals devolve into silos and friction. We prioritize skill-capacity over heart-alignment. We are missing the "why." We are trying to win World Cups with a roster of solo artists who refuse to pass the ball.
+
+### 🤝 Our Manifesto: We Live For Others — The Power of Alignment
+FYT is built on the defiant belief that technology must serve, elevate, and accelerate human connection, not replace it. We are building the engine that connects focused human passion with the world's most vital missions.
+
+## 1. The Call to Build: The IKEA Effect for the Human Heart
+This project is not just a platform; it is a declaration of independence from the broken status quo. It is built by communities, for communities.
+
+**Your Code is Your Love:** We don't just want your bug fixes or your code contributions. We want your ownership. This is the IKEA Effect in action: the work you put into this platform is the value you create for your own life, your family, and your neighbors. The platform you help build is the one that will help your son find his purpose, your sister launch her project, or your local community finally find the leader it needs.
+
+**Save Them From Punishment:** FYT is there to make life better for the ones we love. By contributing your time, your story, your feedback, or your skill, you are helping to save millions of people from the daily punishment of a misaligned job. You are creating the escape hatch.
+
+**The Victory of Alignment:** We believe that the greatest impact in the world is achieved when hearts, bodies, and minds align to be the best in their extreme, often small, narrow domain. FYT is the mechanism to align a person's unique superpower (that thing they love so much they do it all day) with a team that values it.
+
+## 2. Our Unwavering Commitment
+100% Free and Open Source: The connections that save our communities cannot be locked behind a paywall. This platform is 100% Free and Open Source because the code itself is a public good, built by the very community it serves.
+
+**Our Mission:** This is how we will find the right players, launch vital community projects, create stronger local economies, and foster the genuine, productive relationships that heal a fractured world. We are here for the impact that's waiting to be unleashed. Join us.
 
 ## 🎯 Hackathon Strategy
 
@@ -136,7 +134,7 @@ python aws_app.py
 ```
 
 ### 4. Demo the Platform
-Visit `http://localhost:5000` and:
+Visit `http://localhost:5002` and:
 1. **Onboarding Flow**: Chat with the Onboarding Agent
 2. **Team Matching**: Get AI-powered team recommendations
 3. **Performance Dashboard**: View real-time team metrics
@@ -266,7 +264,7 @@ This platform is **completely free and open source** (MIT License) because human
 For hackathon questions or technical issues:
 - Check the deployment logs: `tail -f findyourteam.log`
 - Verify AWS services: `aws cloudformation describe-stacks --stack-name FindYourTeamStack`
-- Test endpoints: `curl http://localhost:5000/api/health`
+- Test endpoints: `curl http://localhost:5002/api/health`
 
 ---
 
