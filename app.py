@@ -30,12 +30,12 @@ try:
     from communication.flask_integration import setup_communication
     COMMUNICATION_AVAILABLE = True
 except ImportError as e:
-    logger.warning(f"Communication dependencies not available: {e}")
+    print(f"Communication dependencies not available: {e}")
     COMMUNICATION_AVAILABLE = False
     
     def setup_communication(app):
         """Stub for when communication is not available"""
-        logger.info("Communication setup skipped - dependencies not available")
+        print("Communication setup skipped - dependencies not available")
         return None
 
 # Import enhanced P2P chat system with error handling
@@ -44,13 +44,13 @@ try:
     from simple_p2p_chat import SimpleP2PChatIntegration
     P2P_CHAT_AVAILABLE = True
 except ImportError as e:
-    logger.warning(f"Enhanced P2P Chat dependencies not available: {e}")
+    print(f"Enhanced P2P Chat dependencies not available: {e}")
     P2P_CHAT_AVAILABLE = False
     
     class SimpleP2PChatIntegration:
         """Stub for when P2P chat is not available"""
         def __init__(self, app, socketio):
-            logger.info("Enhanced P2P Chat setup skipped - dependencies not available")
+            print("Enhanced P2P Chat setup skipped - dependencies not available")
         
         def register_routes(self):
             pass
