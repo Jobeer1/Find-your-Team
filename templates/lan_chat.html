@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAN Chat - Find Your Team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_base.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--sa-green) 0%, var(--sa-green-dark) 100%);
+            padding: 0;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .lan-chat-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .lan-chat-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.online { background: #4ade80; }
+        .status-dot.offline { background: #f87171; }
+        .status-dot.lan { background: #fbbf24; }
+        
+        .chat-main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .users-sidebar {
+            width: 250px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .users-header {
+            padding: 16px;
+            background: #e9ecef;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .users-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 4px;
+        }
+        
+        .user-item:hover {
+            background: #e9ecef;
+        }
+        
+        .user-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .user-status {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 8px 12px;
+            background: transparent;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 24px;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .message.own {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .message.own .message-content {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .message-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .message-text {
+            line-height: 1.4;
+        }
+        
+        .message-status {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .input-area {
+            padding: 16px 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 24px;
+            resize: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            max-height: 120px;
+            min-height: 44px;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .offline-indicator {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px 24px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #ffeaa7;
+        }
+        
+        .typing-indicator {
+            padding: 8px 24px;
+            font-style: italic;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @media (max-width: 768px) {
+            .users-sidebar {
+                display: none;
+            }
+            
+            .lan-chat-container {
+                height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lan-chat-container">
+        <!-- Header -->
+        <div class="lan-chat-header">
+            <div class="header-left">
+                <h2><i class="fas fa-comments"></i> LAN Team Chat</h2>
+            </div>
+            <div class="header-right">
+                <div class="connection-status" id="connection-status">
+                    <div class="status-dot lan" id="status-dot"></div>
+                    <span id="status-text">LAN Connected</span>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="goToDashboard()">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </button>
+            </div>
+        </div>
+        
+        <!-- Offline Indicator -->
+        <div class="offline-indicator" id="offline-indicator" style="display: none;">
+            <i class="fas fa-wifi-slash"></i> You're offline. Messages will be sent when connection is restored.
+        </div>
+        
+        <!-- Main Chat Area -->
+        <div class="chat-main">
+            <!-- Users Sidebar -->
+            <div class="users-sidebar">
+                <div class="users-header">
+                    <i class="fas fa-users"></i> Team Members (<span id="user-count">0</span>)
+                </div>
+                <div class="users-list" id="users-list">
+                    <!-- Users will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-header">
+                    <div class="chat-title" id="chat-title">General Chat</div>
+                    <div class="chat-actions">
+                        <button class="action-btn" onclick="clearChat()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                        <button class="action-btn" onclick="exportChat()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="messages-container" id="messages-container">
+                    <!-- Messages will be populated here -->
+                </div>
+                
+                <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                    Someone is typing...
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-container">
+                        <textarea 
+                            class="message-input" 
+                            id="message-input" 
+                            placeholder="Type your message..." 
+                            rows="1"
+                        ></textarea>
+                        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LAN Chat Application
+        class LANChat {
+            constructor() {
+                this.currentUser = this.getCurrentUser();
+                this.messages = this.loadMessages();
+                this.users = new Map();
+                this.isOnline = navigator.onLine;
+                this.messageQueue = [];
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.initializeUsers();
+                this.renderMessages();
+                this.startHeartbeat();
+                this.setupOfflineHandling();
+            }
+            
+            getCurrentUser() {
+                let user = JSON.parse(localStorage.getItem('user') || 'null');
+                if (!user) {
+                    user = {
+                        id: 'user_' + Math.random().toString(36).substr(2, 9),
+                        name: 'Anonymous User',
+                        avatar: 'AU'
+                    };
+                    localStorage.setItem('user', JSON.stringify(user));
+                }
+                return user;
+            }
+            
+            setupEventListeners() {
+                const messageInput = document.getElementById('message-input');
+                const sendBtn = document.getElementById('send-btn');
+                
+                messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+                
+                messageInput.addEventListener('input', () => {
+                    this.handleTyping();
+                    this.autoResize(messageInput);
+                });
+                
+                // Online/offline detection
+                window.addEventListener('online', () => this.handleOnline());
+                window.addEventListener('offline', () => this.handleOffline());
+            }
+            
+            autoResize(textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+            }
+            
+            initializeUsers() {
+                // Add current user
+                this.users.set(this.currentUser.id, {
+                    ...this.currentUser,
+                    status: 'online',
+                    lastSeen: new Date()
+                });
+                
+                // Add some demo users for LAN simulation
+                const demoUsers = [
+                    { id: 'user_demo1', name: 'Alice Johnson', avatar: 'AJ', status: 'online' },
+                    { id: 'user_demo2', name: 'Bob Smith', avatar: 'BS', status: 'away' },
+                    { id: 'user_demo3', name: 'Carol Davis', avatar: 'CD', status: 'online' }
+                ];
+                
+                demoUsers.forEach(user => {
+                    this.users.set(user.id, {
+                        ...user,
+                        lastSeen: new Date()
+                    });
+                });
+                
+                this.renderUsers();
+            }
+            
+            renderUsers() {
+                const usersList = document.getElementById('users-list');
+                const userCount = document.getElementById('user-count');
+                
+                usersList.innerHTML = '';
+                userCount.textContent = this.users.size;
+                
+                this.users.forEach(user => {
+                    const userElement = document.createElement('div');
+                    userElement.className = 'user-item';
+                    userElement.innerHTML = `
+                        <div class="user-avatar">${user.avatar}</div>
+                        <div class="user-info">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-status">${user.status}</div>
+                        </div>
+                    `;
+                    usersList.appendChild(userElement);
+                });
+            }
+            
+            sendMessage() {
+                const messageInput = document.getElementById('message-input');
+                const text = messageInput.value.trim();
+                
+                if (!text) return;
+                
+                const message = {
+                    id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    sender: this.currentUser,
+                    text: text,
+                    timestamp: new Date(),
+                    status: this.isOnline ? 'sent' : 'queued'
+                };
+                
+                if (this.isOnline) {
+                    this.addMessage(message);
+                    this.broadcastMessage(message);
+                } else {
+                    this.messageQueue.push(message);
+                    this.addMessage({...message, status: 'queued'});
+                }
+                
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                this.saveMessages();
+            }
+            
+            addMessage(message) {
+                this.messages.push(message);
+                this.renderMessage(message);
+                this.scrollToBottom();
+            }
+            
+            renderMessage(message) {
+                const container = document.getElementById('messages-container');
+                const messageElement = document.createElement('div');
+                const isOwn = message.sender.id === this.currentUser.id;
+                
+                messageElement.className = `message ${isOwn ? 'own' : ''}`;
+                messageElement.innerHTML = `
+                    <div class="message-avatar">${message.sender.avatar}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="message-sender">${isOwn ? 'You' : message.sender.name}</div>
+                            <div class="message-time">${this.formatTime(message.timestamp)}</div>
+                        </div>
+                        <div class="message-text">${this.escapeHtml(message.text)}</div>
+                        ${isOwn ? `<div class="message-status">${this.getStatusIcon(message.status)}</div>` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(messageElement);
+            }
+            
+            renderMessages() {
+                const container = document.getElementById('messages-container');
+                container.innerHTML = '';
+                
+                this.messages.forEach(message => {
+                    this.renderMessage(message);
+                });
+                
+                this.scrollToBottom();
+            }
+            
+            scrollToBottom() {
+                const container = document.getElementById('messages-container');
+                container.scrollTop = container.scrollHeight;
+            }
+            
+            formatTime(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            getStatusIcon(status) {
+                const icons = {
+                    'sent': '✓',
+                    'delivered': '✓✓',
+                    'queued': '⏳',
+                    'failed': '✗'
+                };
+                return icons[status] || '';
+            }
+            
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            handleOnline() {
+                this.isOnline = true;
+                this.updateConnectionStatus('online', 'Connected');
+                document.getElementById('offline-indicator').style.display = 'none';
+                
+                // Send queued messages
+                this.processMessageQueue();
+            }
+            
+            handleOffline() {
+                this.isOnline = false;
+                this.updateConnectionStatus('offline', 'Offline');
+                document.getElementById('offline-indicator').style.display = 'block';
+            }
+            
+            updateConnectionStatus(status, text) {
+                const statusDot = document.getElementById('status-dot');
+                const statusText = document.getElementById('status-text');
+                
+                statusDot.className = `status-dot ${status}`;
+                statusText.textContent = text;
+            }
+            
+            processMessageQueue() {
+                if (this.messageQueue.length === 0) return;
+                
+                this.messageQueue.forEach(message => {
+                    message.status = 'sent';
+                    this.broadcastMessage(message);
+                });
+                
+                this.messageQueue = [];
+                this.renderMessages(); // Re-render to update status
+            }
+            
+            broadcastMessage(message) {
+                // In a real LAN implementation, this would use WebRTC or local network protocols
+                // For demo, we'll simulate message broadcasting
+                console.log('Broadcasting message:', message);
+                
+                // Simulate receiving messages from other users occasionally
+                if (Math.random() < 0.3) {
+                    setTimeout(() => {
+                        this.simulateIncomingMessage();
+                    }, 1000 + Math.random() * 3000);
+                }
+            }
+            
+            simulateIncomingMessage() {
+                const otherUsers = Array.from(this.users.values()).filter(u => u.id !== this.currentUser.id);
+                if (otherUsers.length === 0) return;
+                
+                const randomUser = otherUsers[Math.floor(Math.random() * otherUsers.length)];
+                const responses = [
+                    "That's a great idea!",
+                    "I agree with that approach.",
+                    "Let me think about this...",
+                    "How can I help with this?",
+                    "Thanks for sharing!",
+                    "I have some thoughts on this.",
+                    "Let's discuss this further.",
+                    "Good point!"
+                ];
+                
+                const message = {
+                    id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    sender: randomUser,
+                    text: responses[Math.floor(Math.random() * responses.length)],
+                    timestamp: new Date(),
+                    status: 'delivered'
+                };
+                
+                this.addMessage(message);
+                this.saveMessages();
+            }
+            
+            handleTyping() {
+                // In a real implementation, this would notify other users
+                console.log('User is typing...');
+            }
+            
+            startHeartbeat() {
+                // Simulate network heartbeat for LAN detection
+                setInterval(() => {
+                    // In real implementation, this would ping other LAN devices
+                    this.updateConnectionStatus('lan', 'LAN Connected');
+                }, 5000);
+            }
+            
+            setupOfflineHandling() {
+                // Handle page visibility for better offline detection
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        // Page is hidden, might be going offline
+                    } else {
+                        // Page is visible again, check connection
+                        if (navigator.onLine && !this.isOnline) {
+                            this.handleOnline();
+                        }
+                    }
+                });
+            }
+            
+            loadMessages() {
+                try {
+                    const stored = localStorage.getItem('lan_chat_messages');
+                    return stored ? JSON.parse(stored) : [];
+                } catch (error) {
+                    console.error('Error loading messages:', error);
+                    return [];
+                }
+            }
+            
+            saveMessages() {
+                try {
+                    // Keep only last 100 messages to save storage
+                    const messagesToSave = this.messages.slice(-100);
+                    localStorage.setItem('lan_chat_messages', JSON.stringify(messagesToSave));
+                } catch (error) {
+                    console.error('Error saving messages:', error);
+                }
+            }
+        }
+        
+        // Global functions
+        function clearChat() {
+            if (confirm('Are you sure you want to clear all messages?')) {
+                localStorage.removeItem('lan_chat_messages');
+                location.reload();
+            }
+        }
+        
+        function exportChat() {
+            const messages = JSON.parse(localStorage.getItem('lan_chat_messages') || '[]');
+            const text = messages.map(msg => 
+                `[${new Date(msg.timestamp).toLocaleString()}] ${msg.sender.name}: ${msg.text}`
+            ).join('\n');
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lan_chat_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+        
+        // Initialize the chat application
+        let lanChat;
+        document.addEventListener('DOMContentLoaded', function() {
+            lanChat = new LANChat();
+        });
+    </script>
+</body>
+</html>

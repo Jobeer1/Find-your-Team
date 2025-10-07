@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Find Your Team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_base.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_components.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_utils.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--sa-green) 0%, var(--sa-green-dark) 100%);
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+        
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .profile-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+        }
+        
+        .profile-email {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0 0 16px 0;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        
+        .profile-stat {
+            text-align: center;
+        }
+        
+        .profile-stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--sa-green);
+            margin-bottom: 4px;
+        }
+        
+        .profile-stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .profile-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .profile-section h3 {
+            margin: 0 0 20px 0;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: var(--border-radius-md);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--sa-green);
+            box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.1);
+        }
+        
+        .preference-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .preference-group:last-child {
+            border-bottom: none;
+        }
+        
+        .preference-label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .preference-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .toggle-switch.active {
+            background: var(--sa-green);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .btn-primary {
+            flex: 1;
+        }
+        
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .insight-category h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .insight-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .insight-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .confidence-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .confidence-bar {
+            flex: 1;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #27ae60 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        #confidence-score {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar fixed">
+        <div class="nav-brand">
+            <h2><a href="/dashboard">Find Your Team</a></h2>
+        </div>
+        <div class="nav-actions">
+            <a href="/dashboard" class="btn btn-outline btn-sm">Dashboard</a>
+            <button onclick="logout()" class="btn btn-outline btn-sm">Logout</button>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1 class="profile-name" id="profile-name">Loading...</h1>
+            <p class="profile-email" id="profile-email">Loading...</p>
+            
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <span class="profile-stat-value" id="messages-sent">-</span>
+                    <span class="profile-stat-label">Messages Sent</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-value" id="files-shared">-</span>
+                    <span class="profile-stat-label">Files Shared</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-value" id="teams-joined">-</span>
+                    <span class="profile-stat-label">Teams Joined</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-value" id="active-since">-</span>
+                    <span class="profile-stat-label">Active Since</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Information -->
+        <div class="profile-section">
+            <h3>Profile Information</h3>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="display-name">Display Name</label>
+                    <input type="text" id="display-name" name="display_name" placeholder="Your display name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="your.email@example.com">
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="loadProfile()">
+                        <i class="fas fa-undo"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Extracted Insights -->
+        <div class="profile-section">
+            <h3>AI-Extracted Insights</h3>
+            <div id="insights-container" style="display: none;">
+                <div class="insights-grid">
+                    <div class="insight-category">
+                        <h4><i class="fas fa-heart"></i> Values & Motivations</h4>
+                        <div id="extracted-values" class="insight-tags"></div>
+                    </div>
+                    <div class="insight-category">
+                        <h4><i class="fas fa-tools"></i> Skills & Abilities</h4>
+                        <div id="extracted-skills" class="insight-tags"></div>
+                    </div>
+                    <div class="insight-category">
+                        <h4><i class="fas fa-fire"></i> Passion Areas</h4>
+                        <div id="extracted-passions" class="insight-tags"></div>
+                    </div>
+                    <div class="insight-category">
+                        <h4><i class="fas fa-chart-line"></i> Confidence Score</h4>
+                        <div class="confidence-display">
+                            <div class="confidence-bar">
+                                <div id="confidence-fill" class="confidence-fill"></div>
+                            </div>
+                            <span id="confidence-score">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="no-insights" style="display: block;">
+                <p>No insights extracted yet. Start chatting with the onboarding agent and use the "Extract Insights" button to analyze your conversations!</p>
+            </div>
+        </div>
+
+        <!-- Preferences -->
+        <div class="profile-section">
+            <h3>Preferences</h3>
+            
+            <div class="preference-group">
+                <div>
+                    <div class="preference-label">Chat Mode</div>
+                    <div class="preference-description">Auto-select best chat mode based on connection</div>
+                </div>
+                <select id="chat-mode-preference">
+                    <option value="auto">Auto (Recommended)</option>
+                    <option value="high_global">High Bandwidth Global</option>
+                    <option value="low_global">Low Bandwidth Global</option>
+                    <option value="lan_high">LAN High Bandwidth</option>
+                    <option value="lan_low">LAN Low Bandwidth</option>
+                </select>
+            </div>
+            
+            <div class="preference-group">
+                <div>
+                    <div class="preference-label">Notifications</div>
+                    <div class="preference-description">Receive browser notifications for new messages</div>
+                </div>
+                <div class="toggle-switch" id="notifications-toggle"></div>
+            </div>
+            
+            <div class="preference-group">
+                <div>
+                    <div class="preference-label">Dark Mode</div>
+                    <div class="preference-description">Use dark theme for better viewing in low light</div>
+                </div>
+                <div class="toggle-switch" id="dark-mode-toggle"></div>
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" onclick="savePreferences()">
+                    <i class="fas fa-cog"></i>
+                    Save Preferences
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let profileData = null;
+        
+        // Load profile data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfile();
+        });
+        
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/profile');
+                if (response.ok) {
+                    profileData = await response.json();
+                    updateProfileUI();
+                } else {
+                    console.error('Failed to load profile:', response.statusText);
+                    showError('Failed to load profile information');
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showError('Error loading profile information');
+            }
+        }
+        
+        function updateProfileUI() {
+            if (!profileData) return;
+            
+            // Update header
+            document.getElementById('profile-name').textContent = profileData.display_name || 'Demo User';
+            document.getElementById('profile-email').textContent = profileData.email || 'demo@example.com';
+            
+            // Update stats
+            if (profileData.stats) {
+                document.getElementById('messages-sent').textContent = profileData.stats.messages_sent || 0;
+                document.getElementById('files-shared').textContent = profileData.stats.files_shared || 0;
+                document.getElementById('teams-joined').textContent = profileData.stats.teams_joined || 0;
+                document.getElementById('active-since').textContent = profileData.stats.active_since || 'Today';
+            }
+            
+            // Update form fields
+            document.getElementById('display-name').value = profileData.display_name || '';
+            document.getElementById('email').value = profileData.email || '';
+            
+            // Update preferences
+            if (profileData.preferences) {
+                document.getElementById('chat-mode-preference').value = profileData.preferences.chat_mode || 'auto';
+                
+                const notificationsToggle = document.getElementById('notifications-toggle');
+                if (profileData.preferences.notifications) {
+                    notificationsToggle.classList.add('active');
+                }
+                
+                const darkModeToggle = document.getElementById('dark-mode-toggle');
+                if (profileData.preferences.dark_mode) {
+                    darkModeToggle.classList.add('active');
+                }
+            }
+            
+            // Update extracted insights
+            if (profileData.extracted_insights && Object.keys(profileData.extracted_insights).length > 0) {
+                displayInsights(profileData.extracted_insights);
+            }
+        }
+        
+        function displayInsights(insights) {
+            const insightsContainer = document.getElementById('insights-container');
+            const noInsights = document.getElementById('no-insights');
+            
+            if (!insights || (!insights.extracted_values?.length && !insights.skills_identified?.length && !insights.passion_areas?.length)) {
+                insightsContainer.style.display = 'none';
+                noInsights.style.display = 'block';
+                return;
+            }
+            
+            insightsContainer.style.display = 'block';
+            noInsights.style.display = 'none';
+            
+            // Display values
+            const valuesContainer = document.getElementById('extracted-values');
+            valuesContainer.innerHTML = '';
+            if (insights.extracted_values?.length) {
+                insights.extracted_values.forEach(value => {
+                    const tag = document.createElement('span');
+                    tag.className = 'insight-tag';
+                    tag.textContent = value;
+                    valuesContainer.appendChild(tag);
+                });
+            } else {
+                valuesContainer.innerHTML = '<em>None identified yet</em>';
+            }
+            
+            // Display skills
+            const skillsContainer = document.getElementById('extracted-skills');
+            skillsContainer.innerHTML = '';
+            if (insights.skills_identified?.length) {
+                insights.skills_identified.forEach(skill => {
+                    const tag = document.createElement('span');
+                    tag.className = 'insight-tag';
+                    tag.textContent = skill;
+                    skillsContainer.appendChild(tag);
+                });
+            } else {
+                skillsContainer.innerHTML = '<em>None identified yet</em>';
+            }
+            
+            // Display passions
+            const passionsContainer = document.getElementById('extracted-passions');
+            passionsContainer.innerHTML = '';
+            if (insights.passion_areas?.length) {
+                insights.passion_areas.forEach(passion => {
+                    const tag = document.createElement('span');
+                    tag.className = 'insight-tag';
+                    tag.textContent = passion;
+                    passionsContainer.appendChild(tag);
+                });
+            } else {
+                passionsContainer.innerHTML = '<em>None identified yet</em>';
+            }
+            
+            // Display confidence score
+            const confidenceScore = insights.confidence_score || 0;
+            document.getElementById('confidence-score').textContent = `${confidenceScore}%`;
+            document.getElementById('confidence-fill').style.width = `${confidenceScore}%`;
+        }
+        
+        // Handle profile form submission
+        document.getElementById('profile-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                display_name: formData.get('display_name'),
+                email: formData.get('email')
+            };
+            
+            try {
+                e.target.classList.add('loading');
+                
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    showSuccess('Profile updated successfully!');
+                    await loadProfile(); // Reload to get updated data
+                } else {
+                    const error = await response.json();
+                    showError(error.error || 'Failed to update profile');
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showError('Error updating profile');
+            } finally {
+                e.target.classList.remove('loading');
+            }
+        });
+        
+        // Handle toggle switches
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        async function savePreferences() {
+            const chatMode = document.getElementById('chat-mode-preference').value;
+            const notifications = document.getElementById('notifications-toggle').classList.contains('active');
+            const darkMode = document.getElementById('dark-mode-toggle').classList.contains('active');
+            
+            const preferences = {
+                chat_mode: chatMode,
+                notifications: notifications,
+                dark_mode: darkMode
+            };
+            
+            try {
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ preferences: preferences })
+                });
+                
+                if (response.ok) {
+                    showSuccess('Preferences saved successfully!');
+                } else {
+                    const error = await response.json();
+                    showError(error.error || 'Failed to save preferences');
+                }
+            } catch (error) {
+                console.error('Error saving preferences:', error);
+                showError('Error saving preferences');
+            }
+        }
+        
+        function showSuccess(message) {
+            // Simple success notification
+            const notification = document.createElement('div');
+            notification.className = 'notification success';
+            notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+        
+        function showError(message) {
+            // Simple error notification
+            const notification = document.createElement('div');
+            notification.className = 'notification error';
+            notification.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #dc3545;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
+        
+        function logout() {
+            // Clear any stored data and redirect to login
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

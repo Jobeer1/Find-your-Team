@@ -1,0 +1,39 @@
+{
+  "opensearch_endpoint": "localhost:9200",
+  "opensearch_index": "team-opportunities",
+  "bedrock_model_id": "amazon.titan-embed-text-v1",
+  "claude_model_id": "anthropic.claude-3-5-sonnet-20240620",
+  "aws_region": "us-east-1",
+  "logging_level": "INFO",
+  "tool_settings": {
+    "semantic_search": {
+      "default_limit": 5,
+      "min_score_threshold": 0.7,
+      "max_results": 20
+    },
+    "compatibility_analysis": {
+      "default_weights": {
+        "skills": 0.3,
+        "values": 0.3,
+        "work_style": 0.2,
+        "purpose": 0.2
+      },
+      "confidence_threshold": 0.6
+    },
+    "match_explanation": {
+      "max_tokens": 300,
+      "temperature": 0.7,
+      "explanation_types": ["detailed", "summary", "bullet_points"]
+    },
+    "skill_gap_analysis": {
+      "gap_threshold": 0.6,
+      "priority_levels": ["low", "medium", "high", "critical"]
+    }
+  },
+  "performance_settings": {
+    "cache_embeddings": true,
+    "cache_ttl_seconds": 3600,
+    "max_concurrent_requests": 10,
+    "request_timeout_seconds": 30
+  }
+}

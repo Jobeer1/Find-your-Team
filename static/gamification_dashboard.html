@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamification Dashboard - Find Your Team</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 50%, #6b8e23 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 3px solid #ffd700;
+        }
+
+        .header h1 {
+            color: #2c5530;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-selector {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-selector input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background: #4a7c59;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2c5530;
+            transform: translateY(-1px);
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffd700;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4a7c59;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #2c5530;
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        .purpose-alignment {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .alignment-score {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            position: relative;
+            background: conic-gradient(#4a7c59 0deg, #4a7c59 var(--percentage), #e0e0e0 var(--percentage));
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .score-text {
+            position: relative;
+            z-index: 1;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c5530;
+        }
+
+        .grade {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4a7c59;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .breakdown-bar {
+            width: 100px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: 1rem;
+        }
+
+        .breakdown-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4444, #ffaa00, #4a7c59);
+            transition: width 0.3s ease;
+        }
+
+        .talent-gaps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .gap-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .gap-card.improvement {
+            border-left-color: #ffa726;
+        }
+
+        .gap-card.strength {
+            border-left-color: #66bb6a;
+        }
+
+        .gap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .gap-name {
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .gap-percentage {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .gap-suggestions {
+            margin-top: 0.5rem;
+        }
+
+        .gap-suggestions ul {
+            margin: 0.5rem 0;
+            padding-left: 1rem;
+        }
+
+        .gap-suggestions li {
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .achievement-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card.unlocked {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .achievement-card.unlocked:hover {
+            transform: translateY(-2px);
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .achievement-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .achievement-description {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .achievement-points {
+            font-weight: 600;
+            color: #4a7c59;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4a7c59;
+            transition: width 0.3s ease;
+        }
+
+        .challenges-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .challenge-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .challenge-card.accepted {
+            border-left-color: #ff9800;
+        }
+
+        .challenge-card.completed {
+            border-left-color: #4caf50;
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .challenge-title {
+            font-weight: 600;
+        }
+
+        .challenge-difficulty {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .difficulty-beginner { background: #e8f5e8; color: #2e7d32; }
+        .difficulty-intermediate { background: #fff3e0; color: #ef6c00; }
+        .difficulty-advanced { background: #ffebee; color: #c62828; }
+        .difficulty-expert { background: #f3e5f5; color: #7b1fa2; }
+
+        .challenge-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: #d32f2f;
+            background: #ffebee;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 0 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .purpose-alignment {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Gamification Dashboard</h1>
+        <div class="user-selector">
+            <label for="user-id">User ID:</label>
+            <input type="text" id="user-id" value="test_user_123" placeholder="Enter user ID">
+            <button class="btn" onclick="loadUserData()">Load Profile</button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div id="loading" class="loading" style="display: none;">
+            Loading user profile...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="dashboard-content" style="display: none;">
+            <!-- User Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="user-level">1</div>
+                    <div class="stat-label">Level</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-points">0</div>
+                    <div class="stat-label">Total Points</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="engagement-streak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="achievements-count">0</div>
+                    <div class="stat-label">Achievements</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="active-challenges">0</div>
+                    <div class="stat-label">Active Challenges</div>
+                </div>
+            </div>
+
+            <!-- Purpose Alignment Section -->
+            <div class="section">
+                <div class="section-header">
+                    🎯 Purpose Alignment Score
+                </div>
+                <div class="section-content">
+                    <div class="purpose-alignment">
+                        <div class="alignment-score">
+                            <div class="score-circle" id="purpose-circle">
+                                <div class="score-text" id="purpose-score">0%</div>
+                            </div>
+                            <div class="grade" id="purpose-grade">-</div>
+                            <div>Overall Alignment</div>
+                        </div>
+                        <div class="breakdown" id="purpose-breakdown">
+                            <!-- Breakdown items will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Talent Gap Analysis Section -->
+            <div class="section">
+                <div class="section-header">
+                    📊 Talent Gap Analysis
+                </div>
+                <div class="section-content">
+                    <div class="talent-gaps" id="talent-gaps-container">
+                        <!-- Talent gap cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Section -->
+            <div class="section">
+                <div class="section-header">
+                    🏆 Achievements
+                </div>
+                <div class="section-content">
+                    <div class="achievements-grid" id="achievements-container">
+                        <!-- Achievement cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Challenges Section -->
+            <div class="section">
+                <div class="section-header">
+                    🎮 Personalized Challenges
+                </div>
+                <div class="section-content">
+                    <div class="challenges-list" id="challenges-container">
+                        <!-- Challenge cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = 'test_user_123';
+
+        async function loadUserData() {
+            const userIdInput = document.getElementById('user-id');
+            currentUserId = userIdInput.value.trim();
+            
+            if (!currentUserId) {
+                showError('Please enter a valid user ID');
+                return;
+            }
+
+            showLoading(true);
+            hideError();
+
+            try {
+                await Promise.all([
+                    loadUserProfile(),
+                    loadProgressSummary(),
+                    loadAchievements(),
+                    loadChallenges(),
+                    loadTalentGaps()
+                ]);
+
+                document.getElementById('dashboard-content').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showError('Failed to load user profile. Make sure the server is running.');
+            }
+
+            showLoading(false);
+        }
+
+        async function loadUserProfile() {
+            const response = await fetch(`/api/gamification/profile/${currentUserId}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to load profile');
+            }
+
+            // Update stats
+            document.getElementById('user-level').textContent = data.level;
+            document.getElementById('total-points').textContent = data.total_points.toLocaleString();
+            document.getElementById('engagement-streak').textContent = data.engagement_streak_days;
+            document.getElementById('achievements-count').textContent = data.achievements_count;
+            document.getElementById('active-challenges').textContent = data.active_challenges_count;
+
+            // Update purpose alignment
+            updatePurposeAlignment(data.purpose_alignment);
+        }
+
+        async function loadProgressSummary() {
+            const response = await fetch(`/api/gamification/progress/${currentUserId}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to load progress');
+            }
+
+            // Additional progress data could be displayed here
+        }
+
+        function updatePurposeAlignment(alignment) {
+            const score = alignment.overall_score;
+            const grade = alignment.grade;
+
+            // Update circle
+            const circle = document.getElementById('purpose-circle');
+            const percentage = (score / 100) * 360;
+            circle.style.setProperty('--percentage', `${percentage}deg`);
+
+            document.getElementById('purpose-score').textContent = `${score}%`;
+            document.getElementById('purpose-grade').textContent = grade;
+
+            // Update breakdown
+            const breakdown = document.getElementById('purpose-breakdown');
+            breakdown.innerHTML = '';
+
+            const breakdownItems = [
+                { label: 'Values Alignment', value: alignment.values_alignment },
+                { label: 'Passion Alignment', value: alignment.passion_alignment },
+                { label: 'Skills Match', value: alignment.skills_match },
+                { label: 'Impact Potential', value: alignment.impact_potential }
+            ];
+
+            breakdownItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'breakdown-item';
+                div.innerHTML = `
+                    <span>${item.label}</span>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-fill" style="width: ${item.value}%"></div>
+                    </div>
+                    <span>${item.value}%</span>
+                `;
+                breakdown.appendChild(div);
+            });
+        }
+
+        async function loadTalentGaps() {
+            try {
+                const response = await fetch(`/api/gamification/talent-gaps/${currentUserId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_profile: {
+                            skills: {
+                                communication: 0.7,
+                                leadership: 0.6,
+                                problem_solving: 0.75
+                            }
+                        }
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load talent gaps');
+                }
+
+                displayTalentGaps(data);
+            } catch (error) {
+                console.error('Error loading talent gaps:', error);
+                // Show demo data
+                displayTalentGaps({
+                    overall_readiness: 68,
+                    critical_gaps: [
+                        {
+                            skill_name: 'community_engagement',
+                            current_level: 40,
+                            target_level: 80,
+                            gap_percentage: 40,
+                            improvement_suggestions: [
+                                'Volunteer with local organizations',
+                                'Attend community meetings'
+                            ]
+                        }
+                    ],
+                    improvement_gaps: [
+                        {
+                            skill_name: 'leadership',
+                            current_level: 60,
+                            target_level: 80,
+                            gap_percentage: 20,
+                            improvement_suggestions: [
+                                'Lead a team project',
+                                'Take leadership training'
+                            ]
+                        }
+                    ],
+                    strength_areas: ['communication', 'problem_solving']
+                });
+            }
+        }
+
+        function displayTalentGaps(data) {
+            const container = document.getElementById('talent-gaps-container');
+            container.innerHTML = '';
+
+            // Overall readiness card
+            const readinessCard = document.createElement('div');
+            readinessCard.className = 'gap-card strength';
+            readinessCard.innerHTML = `
+                <div class="gap-header">
+                    <div class="gap-name">Overall Readiness</div>
+                    <div class="gap-percentage">${data.overall_readiness}%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${data.overall_readiness}%"></div>
+                </div>
+            `;
+            container.appendChild(readinessCard);
+
+            // Critical gaps
+            data.critical_gaps.forEach(gap => {
+                const card = document.createElement('div');
+                card.className = 'gap-card';
+                card.innerHTML = `
+                    <div class="gap-header">
+                        <div class="gap-name">${gap.skill_name.replace('_', ' ')}</div>
+                        <div class="gap-percentage">${gap.gap_percentage}% gap</div>
+                    </div>
+                    <div class="gap-suggestions">
+                        <strong>Improvement suggestions:</strong>
+                        <ul>
+                            ${gap.improvement_suggestions.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Strength areas
+            if (data.strength_areas && data.strength_areas.length > 0) {
+                const strengthCard = document.createElement('div');
+                strengthCard.className = 'gap-card strength';
+                strengthCard.innerHTML = `
+                    <div class="gap-header">
+                        <div class="gap-name">Strength Areas</div>
+                        <div class="gap-percentage">✨</div>
+                    </div>
+                    <div>${data.strength_areas.map(area => area.replace('_', ' ')).join(', ')}</div>
+                `;
+                container.appendChild(strengthCard);
+            }
+        }
+
+        async function loadAchievements() {
+            try {
+                const response = await fetch(`/api/gamification/achievements/${currentUserId}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load achievements');
+                }
+
+                displayAchievements(data.achievements);
+            } catch (error) {
+                console.error('Error loading achievements:', error);
+                // Show demo achievements
+                displayAchievements([
+                    {
+                        title: 'First Steps',
+                        description: 'Started your first conversation',
+                        icon: '🌱',
+                        points: 50,
+                        unlocked: true
+                    },
+                    {
+                        title: 'Purpose Seeker',
+                        description: 'Achieved 80% purpose alignment',
+                        icon: '🎯',
+                        points: 200,
+                        unlocked: false,
+                        progress_percentage: 65
+                    }
+                ]);
+            }
+        }
+
+        function displayAchievements(achievements) {
+            const container = document.getElementById('achievements-container');
+            container.innerHTML = '';
+
+            achievements.forEach(achievement => {
+                const card = document.createElement('div');
+                card.className = `achievement-card ${achievement.unlocked ? 'unlocked' : ''}`;
+                
+                let progressBar = '';
+                if (!achievement.unlocked && achievement.progress_percentage > 0) {
+                    progressBar = `
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${achievement.progress_percentage}%"></div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-title">${achievement.title}</div>
+                    <div class="achievement-description">${achievement.description}</div>
+                    <div class="achievement-points">${achievement.points} points</div>
+                    ${progressBar}
+                `;
+                
+                if (achievement.unlocked) {
+                    card.classList.add('pulse');
+                }
+                
+                container.appendChild(card);
+            });
+        }
+
+        async function loadChallenges() {
+            try {
+                const response = await fetch(`/api/gamification/challenges/${currentUserId}?count=5`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load challenges');
+                }
+
+                displayChallenges(data.challenges);
+            } catch (error) {
+                console.error('Error loading challenges:', error);
+                // Show demo challenges
+                displayChallenges([
+                    {
+                        title: 'Define Your Values (Communication)',
+                        description: 'Identify and articulate your top 5 core values',
+                        difficulty: 'beginner',
+                        category: 'Purpose Discovery',
+                        points_reward: 110,
+                        estimated_duration_days: 7,
+                        status: 'not_started',
+                        success_criteria: ['List 5 core values', 'Explain importance', 'Share with team']
+                    }
+                ]);
+            }
+        }
+
+        function displayChallenges(challenges) {
+            const container = document.getElementById('challenges-container');
+            container.innerHTML = '';
+
+            if (challenges.length === 0) {
+                container.innerHTML = '<p>No challenges available. Complete more activities to unlock challenges!</p>';
+                return;
+            }
+
+            challenges.forEach(challenge => {
+                const card = document.createElement('div');
+                card.className = `challenge-card ${challenge.status}`;
+                card.innerHTML = `
+                    <div class="challenge-header">
+                        <div class="challenge-title">${challenge.title}</div>
+                        <div class="challenge-difficulty difficulty-${challenge.difficulty}">${challenge.difficulty}</div>
+                    </div>
+                    <div class="challenge-description">${challenge.description}</div>
+                    <div class="challenge-info">
+                        <div><strong>Category:</strong> ${challenge.category}</div>
+                        <div><strong>Reward:</strong> ${challenge.points_reward} points</div>
+                        <div><strong>Duration:</strong> ${challenge.estimated_duration_days} days</div>
+                        <div><strong>Status:</strong> ${challenge.status.replace('_', ' ')}</div>
+                    </div>
+                    ${challenge.success_criteria ? `
+                        <div class="gap-suggestions">
+                            <strong>Success criteria:</strong>
+                            <ul>
+                                ${challenge.success_criteria.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+        });
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                loadUserData();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+'''ini
+# Create a file named `config.ini.local` (not checked into git) and copy values from here.
+# This file is intended for development machines and should contain your real secrets.
+
+[AWS]
+aws_access_key_id = AKIA...REPLACE_WITH_YOURS
+aws_secret_access_key = your-aws-secret-access-key
+aws_region = us-west-2
+
+[APP]
+debug = true
+host = 0.0.0.0
+port = 5002
+
+# Security settings - keep these secret
+secret_key = replace-with-a-long-random-string
+session_secret = replace-with-a-long-random-string
+
+# Example: If you use a local DynamoDB for development, point to it here
+# dynamodb_endpoint_url = http://localhost:8000
+
+'''

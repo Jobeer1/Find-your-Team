@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Find Your Team</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#006A4E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="/static/js/communication.js"></script>
+    <link rel="stylesheet" href="/static/css/find_your_team_base.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_components.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_features.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_utils.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--sa-green) 0%, var(--sa-green-dark) 100%);
+            padding-top: 80px;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .dashboard-welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .welcome-text h1 {
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .welcome-text p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .dashboard-stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 12px 20px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: var(--border-radius);
+            min-width: 120px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .dashboard-main {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+            align-items: start;
+        }
+        
+        .chat-section {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .chat-body {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sidebar-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-card h3 {
+            margin: 0 0 16px 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        /* Chat Access Section Styles */
+        .chat-access-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .chat-access-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .chat-access-header h2 {
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .chat-access-header p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .chat-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chat-option {
+            background: white;
+            border-radius: var(--border-radius-md);
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .chat-option:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .chat-option-icon {
+            align-self: flex-start;
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius-md);
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .chat-option-content h3 {
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .chat-option-content p {
+            margin: 0 0 12px 0;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .chat-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .feature-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: var(--bg-light);
+            border-radius: var(--border-radius-sm);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .feature-tag i {
+            font-size: 0.75rem;
+        }
+        
+        .chat-option-action {
+            margin-top: auto;
+        }
+        
+        .chat-option-action .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: width 0.3s ease;
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .quick-action-btn {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid #e9ecef;
+            border-radius: var(--border-radius);
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        
+        .quick-action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+        
+        .loading-dots span {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-right: 4px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-online .status-dot {
+            background: #4ade80;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-welcome {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .dashboard-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>Find Your Team</h2>
+        </div>
+        <div class="nav-actions">
+            <span style="margin-right: 16px; color: var(--text-primary);">Welcome, <span id="user-name">User</span>!</span>
+            <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-welcome">
+                <div class="welcome-text">
+                    <h1>Welcome back!</h1>
+                    <p>Continue your journey to find your perfect team</p>
+                </div>
+                <div class="dashboard-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="confidence-score">75</span>
+                        <span class="stat-label">Confidence</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="matches-count">3</span>
+                        <span class="stat-label">Matches</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="messages-count">12</span>
+                        <span class="stat-label">Messages</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Access Section -->
+        <div class="chat-access-section">
+            <div class="chat-access-header">
+                <h2><i class="fas fa-comments"></i> Chat & Communication</h2>
+                <p>Choose your preferred communication mode</p>
+            </div>
+            <div class="chat-options">
+                <div class="chat-option">
+                    <div class="chat-option-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="chat-option-content">
+                        <h3>P2P Chat</h3>
+                        <p>Direct peer-to-peer communication with advanced features, file sharing, and enhanced privacy</p>
+                        <div class="chat-features">
+                            <span class="feature-tag"><i class="fas fa-shield-alt"></i> Private & Secure</span>
+                            <span class="feature-tag"><i class="fas fa-file-alt"></i> File Sharing</span>
+                            <span class="feature-tag"><i class="fas fa-bolt"></i> Real-time</span>
+                        </div>
+                    </div>
+                    <div class="chat-option-action">
+                        <a href="/p2p-chat" class="btn btn-primary">
+                            <i class="fas fa-comments"></i> Start P2P Chat
+                        </a>
+                    </div>
+                </div>
+                <div class="chat-option">
+                    <div class="chat-option-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <div class="chat-option-content">
+                        <h3>LAN Chat</h3>
+                        <p>Local network communication optimized for team collaboration and local file sharing</p>
+                        <div class="chat-features">
+                            <span class="feature-tag"><i class="fas fa-network-wired"></i> Local Network</span>
+                            <span class="feature-tag"><i class="fas fa-users"></i> Team Focus</span>
+                            <span class="feature-tag"><i class="fas fa-tachometer-alt"></i> High Speed</span>
+                        </div>
+                    </div>
+                    <div class="chat-option-action">
+                        <a href="/lan-chat" class="btn btn-secondary">
+                            <i class="fas fa-wifi"></i> Join LAN Chat
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="dashboard-main">
+            <!-- Chat Section -->
+            <div class="chat-section">
+                <div class="chat-header">
+                    <i class="fas fa-comments"></i>
+                    <h2>Chat with Your AI Guide</h2>
+                    <div style="margin-left: auto;">
+                        <span class="status-indicator status-online">
+                            <div class="status-dot"></div>
+                            <span>Online</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="chat-body">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message agent-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <strong>Your AI Guide</strong>
+                                Welcome back! I'm here to help you continue discovering your purpose and connecting with the right teams. What would you like to explore today?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <textarea id="chat-input" placeholder="Type your message here..." maxlength="1000"></textarea>
+                                <div class="char-counter">
+                                    <span id="char-count">0</span>/1000
+                                </div>
+                            </div>
+                            <div class="button-group">
+                                <button class="btn btn-lg" id="send-button" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                    <span>Send</span>
+                                </button>
+                                <button class="btn btn-lg btn-secondary" id="extract-insights-button" onclick="extractInsightsFromDashboard()">
+                                    <i class="fas fa-brain"></i>
+                                    <span>Extract Insights</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Progress Card -->
+                <div class="sidebar-card">
+                    <h3><i class="fas fa-chart-line"></i> Your Progress</h3>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Purpose Profile</span>
+                            <span id="progress-percentage">75%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;">
+                            Keep chatting to improve your profile confidence!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="sidebar-card">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="findMatches()">
+                            <i class="fas fa-search"></i>
+                            <span>Find Team Matches</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="viewProfile()">
+                            <i class="fas fa-user"></i>
+                            <span>View My Profile</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="shareJourney()">
+                            <i class="fas fa-share-alt"></i>
+                            <span>Share My Journey</span>
+                        </button>
+                        <a href="/lan-chat" class="quick-action-btn">
+                            <i class="fas fa-wifi"></i>
+                            <span>LAN Team Chat</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Matches -->
+                <div class="sidebar-card">
+                    <h3><i class="fas fa-users"></i> Recent Matches</h3>
+                    <div id="recent-matches">
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Complete your profile to see team matches!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/find_your_team.js"></script>
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+        });
+        
+        function initializeDashboard() {
+            // Load user data
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            // Update user name
+            document.getElementById('user-name').textContent = user.name;
+            
+            // Load chat history
+            loadChatHistory();
+            
+            // Initialize chat functionality
+            setupChatInterface();
+            
+            // Load user progress
+            loadUserProgress();
+            
+            // Setup online/offline detection
+            setupOfflineDetection();
+            
+            // Process any queued messages if we're online
+            if (navigator.onLine) {
+                setTimeout(processQueuedMessages, 1000);
+            }
+        }
+        
+        function setupOfflineDetection() {
+            // Update status based on current state
+            updateOnlineStatus();
+            
+            // Listen for online/offline events
+            window.addEventListener('online', () => {
+                updateOnlineStatus();
+                processQueuedMessages();
+            });
+            
+            window.addEventListener('offline', () => {
+                updateOnlineStatus();
+            });
+        }
+        
+        function updateOnlineStatus() {
+            const statusElement = document.querySelector('.status-indicator span');
+            const statusDot = document.querySelector('.status-dot');
+            
+            if (navigator.onLine) {
+                statusElement.textContent = 'Online';
+                statusDot.style.background = '#4ade80';
+            } else {
+                statusElement.textContent = 'Offline';
+                statusDot.style.background = '#f87171';
+            }
+        }
+        
+        function loadChatHistory() {
+            // Load previous chat messages from localStorage or API
+            const chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            const chatMessages = document.getElementById('chat-messages');
+            
+            // Clear existing messages except welcome
+            const welcomeMessage = chatMessages.querySelector('.message');
+            chatMessages.innerHTML = '';
+            chatMessages.appendChild(welcomeMessage);
+            
+            // Add chat history
+            chatHistory.forEach(message => {
+                addMessageToChat(message.type, message.content, message.confidence);
+            });
+        }
+        
+        function setupChatInterface() {
+            const chatInput = document.getElementById('chat-input');
+            const sendButton = document.getElementById('send-button');
+            
+            // Input event listeners
+            chatInput.addEventListener('input', function(e) {
+                const charCount = e.target.value.length;
+                document.getElementById('char-count').textContent = charCount;
+                sendButton.disabled = charCount === 0 || charCount > 1000;
+                
+                // Auto-resize
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+            });
+            
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessageToChat('user', message);
+            
+            // Clear input
+            input.value = '';
+            document.getElementById('char-count').textContent = '0';
+            input.style.height = 'auto';
+            
+            // Check if online
+            if (!navigator.onLine) {
+                // Offline mode - queue message and provide offline response
+                queueMessageForLater(message);
+                addMessageToChat('agent', 'I see your message! I\'m currently offline, but I\'ll respond when we\'re back online. In the meantime, you can use the LAN Chat to connect with nearby team members.', 0);
+                return;
+            }
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Send to API with timeout for low bandwidth
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: message,
+                    agent: 'onboarding',
+                    user_id: getUserId()
+                }),
+                signal: controller.signal
+            })
+            .then(response => {
+                clearTimeout(timeoutId);
+                if (!response.ok) {
+                    if (response.status === 503) {
+                        return response.json().then(errorData => {
+                            throw new Error('demo_mode');
+                        });
+                    }
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                hideTypingIndicator();
+                addMessageToChat('agent', data.message || 'I received your message!', data.confidence);
+                
+                // Save to chat history
+                saveChatMessage('user', message);
+                saveChatMessage('agent', data.message || 'I received your message!', data.confidence);
+                
+                // Update progress if provided
+                if (data.confidence) {
+                    updateProgress(data.confidence);
+                }
+            })
+            .catch(error => {
+                clearTimeout(timeoutId);
+                console.error('Error:', error);
+                hideTypingIndicator();
+                
+                let errorMessage = 'Sorry, I encountered an error. Please try again.';
+                if (error.name === 'AbortError') {
+                    errorMessage = 'Connection timeout. Your message has been queued and will be sent when connection improves. Try the LAN Chat for local communication.';
+                    queueMessageForLater(message);
+                } else if (error.message === 'demo_mode') {
+                    errorMessage = 'Demo mode: I understand you want to find your team! While full AI features require AWS setup, I can still help you get started. What interests you most about team building?';
+                } else if (error.message.includes('fetch')) {
+                    errorMessage = 'Connection issue: Please check your internet connection or try the LAN Chat for local communication.';
+                    queueMessageForLater(message);
+                }
+                
+                addMessageToChat('agent', errorMessage, 0);
+                saveChatMessage('agent', errorMessage, 0);
+            });
+        }
+        
+        function queueMessageForLater(message) {
+            const queue = JSON.parse(localStorage.getItem('messageQueue') || '[]');
+            queue.push({
+                message: message,
+                timestamp: new Date().toISOString(),
+                userId: getUserId()
+            });
+            localStorage.setItem('messageQueue', JSON.stringify(queue));
+        }
+        
+        function processQueuedMessages() {
+            const queue = JSON.parse(localStorage.getItem('messageQueue') || '[]');
+            if (queue.length === 0) return;
+            
+            // Process queued messages when back online
+            queue.forEach(item => {
+                // Re-send the message
+                fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: item.message,
+                        agent: 'onboarding',
+                        user_id: item.userId,
+                        queued: true
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        addMessageToChat('agent', `[Queued Response] ${data.message}`, data.confidence);
+                        saveChatMessage('agent', data.message, data.confidence);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error processing queued message:', error);
+                });
+            });
+            
+            // Clear the queue
+            localStorage.removeItem('messageQueue');
+            
+            if (queue.length > 0) {
+                addMessageToChat('agent', `I've processed ${queue.length} queued message(s) from when you were offline.`, 1);
+            }
+        }
+        
+        function addMessageToChat(type, content, confidence = null) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            const avatar = type === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    ${type === 'agent' ? '<strong>Your AI Guide</strong>' : ''}
+                    ${content}
+                    ${confidence !== null && confidence > 0 ? `<div class="confidence-score"><i class="fas fa-star"></i> ${Math.round(confidence * 100)}% confidence</div>` : ''}
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message agent-message typing-indicator';
+            typingDiv.id = 'typing-indicator';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message-content">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="loading-dots">
+                            <span style="animation: pulse 1.5s infinite;">●</span>
+                            <span style="animation: pulse 1.5s infinite 0.5s;">●</span>
+                            <span style="animation: pulse 1.5s infinite 1s;">●</span>
+                        </div>
+                        <span>AI is typing...</span>
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        function saveChatMessage(type, content, confidence = null) {
+            const chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            chatHistory.push({
+                type: type,
+                content: content,
+                confidence: confidence,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Keep only last 50 messages
+            if (chatHistory.length > 50) {
+                chatHistory.splice(0, chatHistory.length - 50);
+            }
+            
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        }
+        
+        function loadUserProgress() {
+            const progress = JSON.parse(localStorage.getItem('userProgress') || '{"confidence": 75, "matches": 3, "messages": 12}');
+            
+            document.getElementById('confidence-score').textContent = progress.confidence;
+            document.getElementById('matches-count').textContent = progress.matches;
+            document.getElementById('messages-count').textContent = progress.messages;
+            document.getElementById('progress-percentage').textContent = progress.confidence + '%';
+            document.getElementById('progress-fill').style.width = progress.confidence + '%';
+        }
+        
+        function updateProgress(confidence) {
+            const progress = JSON.parse(localStorage.getItem('userProgress') || '{"confidence": 75, "matches": 3, "messages": 12}');
+            progress.confidence = Math.round(confidence * 100);
+            progress.messages += 1;
+            
+            localStorage.setItem('userProgress', JSON.stringify(progress));
+            loadUserProgress();
+        }
+        
+        function getUserId() {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            return user ? user.id : 'anonymous';
+        }
+        
+        function logout() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            localStorage.removeItem('chatHistory');
+            localStorage.removeItem('userProgress');
+            window.location.href = '/';
+        }
+        
+        function findMatches() {
+            alert('Finding matches... (This would navigate to the matching interface)');
+        }
+        
+        function viewProfile() {
+            // Navigate to the profile page
+            window.location.href = '/profile';
+        }
+        
+        function shareJourney() {
+            const url = window.location.origin;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Link copied to clipboard!');
+                });
+            } else {
+                alert('Share this link: ' + url);
+            }
+        }
+        
+        async function extractInsightsFromDashboard() {
+            const button = document.getElementById('extract-insights-button');
+            const originalText = button.innerHTML;
+            
+            try {
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Extracting...</span>';
+                button.disabled = true;
+                
+                // Get conversation text from the chat area
+                const chatMessages = document.querySelectorAll('.chat-message');
+                let conversationText = '';
+                
+                chatMessages.forEach(msg => {
+                    const text = msg.textContent || msg.innerText;
+                    conversationText += text + ' ';
+                });
+                
+                // Add current input if any
+                const currentInput = document.getElementById('chat-input').value;
+                if (currentInput.trim()) {
+                    conversationText += currentInput + ' ';
+                }
+                
+                const response = await fetch('/api/chat/extract-insights', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: 'current_user',
+                        conversation_text: conversationText
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    // Show success message in chat
+                    const insightCount = (result.insights.extracted_values?.length || 0) + 
+                                       (result.insights.skills_identified?.length || 0) + 
+                                       (result.insights.passion_areas?.length || 0);
+                    
+                    addMessageToChat('agent', 
+                        `🧠 Insights extracted successfully! I found ${insightCount} key insights about your values, skills, and passions. ` +
+                        `Check your profile to see the detailed analysis. Your confidence score is ${result.insights.confidence_score || 0}%!`,
+                        0.9
+                    );
+                    
+                    // Optionally redirect to profile after a delay
+                    setTimeout(() => {
+                        if (confirm('Would you like to view your updated profile with the extracted insights?')) {
+                            window.location.href = '/profile';
+                        }
+                    }, 2000);
+                } else {
+                    throw new Error(result.error || 'Failed to extract insights');
+                }
+                
+            } catch (error) {
+                console.error('Error extracting insights:', error);
+                addMessageToChat('agent', 'Sorry, I encountered an error while extracting insights. Please try again later.', 0);
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

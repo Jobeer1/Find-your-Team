@@ -426,11 +426,19 @@ class CommunicationManager:
 def create_communication_manager(app: Flask) -> CommunicationManager:
     """Factory function to create communication manager"""
     
-    # Initialize SocketIO with eventlet
+    # Prefer eventlet if available; otherwise fall back to threading.
+    try:
+        import eventlet  # noqa: F401
+        async_mode = 'eventlet'
+    except Exception:
+        logger.warning('eventlet not available; falling back to threading async mode for SocketIO')
+        async_mode = 'threading'
+
+    # Initialize SocketIO
     socketio = SocketIO(
         app,
         cors_allowed_origins="*",
-        async_mode='eventlet',
+        async_mode=async_mode,
         logger=True,
         engineio_logger=True
     )

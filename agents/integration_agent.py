@@ -245,7 +245,106 @@ class IntegrationAgent:
             API response
         """
         await self._ensure_session()
-        # ... rest of the method
+
+        # Get integration configuration
+        integration = await self._get_integration_config(integration_id)
+        if not integration:
+            raise ValueError(f"Integration {integration_id} not found")
+
+        if integration.status != IntegrationStatus.ACTIVE:
+            raise ValueError(f"Integration {integration_id} is not active")
+
+        # Prepare request
+        url = f"{integration.base_url}{endpoint}"
+        request_headers = await self._prepare_headers(integration, headers or {})
+        request_data = data
+
+        # Convert data to JSON string if it's a dict
+        if isinstance(request_data, dict):
+            request_data = json.dumps(request_data)
+            request_headers['Content-Type'] = 'application/json'
+
+        # Execute request with retries
+        last_error = None
+        for attempt in range(retries + 1):
+            try:
+                async with self.session.request(
+                    method=method.value,
+                    url=url,
+                    headers=request_headers,
+                    params=params,
+                    data=request_data,
+                    timeout=aiohttp.ClientTimeout(total=timeout)
+                ) as response:
+                    # Parse response
+                    response_data = await self._parse_response_data(response)
+
+                    api_response = ApiResponse(
+                        call_id=str(uuid.uuid4()),
+                        status_code=response.status,
+                        headers=dict(response.headers),
+                        data=response_data,
+                        response_time=0.0,  # TODO: Calculate actual response time
+                        success=response.status < 400,
+                        error=None if response.status < 400 else str(response_data)
+                    )
+
+                    # Store API call and response for monitoring
+                    api_call = ApiCall(
+                        call_id=str(uuid.uuid4()),
+                        integration_id=integration_id,
+                        method=method,
+                        endpoint=endpoint,
+                        headers=request_headers,
+                        params=params,
+                        data=request_data,
+                        timeout=timeout,
+                        retries=retries
+                    )
+                    await self._store_api_call(api_call)
+                    await self._store_api_response(api_response)
+
+                    # Update integration health
+                    await self._update_integration_health(integration_id, api_response.success)
+
+                    return api_response
+
+            except Exception as e:
+                last_error = str(e)
+                if attempt < retries:
+                    # Exponential backoff
+                    await asyncio.sleep(2 ** attempt)
+                else:
+                    # All retries exhausted
+                    api_response = ApiResponse(
+                        call_id=str(uuid.uuid4()),
+                        status_code=0,
+                        headers={},
+                        data=None,
+                        response_time=0.0,
+                        success=False,
+                        error=last_error
+                    )
+
+                    # Store failed API call
+                    api_call = ApiCall(
+                        call_id=str(uuid.uuid4()),
+                        integration_id=integration_id,
+                        method=method,
+                        endpoint=endpoint,
+                        headers=request_headers,
+                        params=params,
+                        data=request_data,
+                        timeout=timeout,
+                        retries=retries
+                    )
+                    await self._store_api_call(api_call)
+                    await self._store_api_response(api_response)
+
+                    # Update integration health
+                    await self._update_integration_health(integration_id, False)
+
+                    return api_response
 
     async def sync_data(
         self,

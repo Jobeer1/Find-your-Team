@@ -276,12 +276,12 @@ class TestIntegrationAgent:
             config = await integration_agent._get_integration_config("int-123")
 
             assert config.integration_id == "int-123"
-            assert config in integration_agent._integration_cache
+            assert "int-123" in integration_agent._integration_cache
 
     @pytest.mark.asyncio
     async def test_store_integration_config(self, integration_agent, sample_integration_config):
         """Test storing integration configuration."""
-        with patch.object(integration_agent.integrations_table, 'put_item') as mock_put:
+        with patch.object(integration_agent.integrations_table, 'put_item', new_callable=AsyncMock) as mock_put:
             await integration_agent._store_integration_config(sample_integration_config)
 
             # Verify put_item was called

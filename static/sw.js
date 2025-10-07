@@ -1,13 +1,22 @@
 // Find Your Team - Service Worker for Offline Functionality
 // Enables the platform to work in low-bandwidth and offline conditions
 
-const CACHE_NAME = 'find-your-team-v1';
+const CACHE_NAME = 'find-your-team-v3';
 const urlsToCache = [
   '/',
-  '/static/manifest.json',
-  '/templates/find_your_team.html',
-  'https://code.jquery.com/jquery-3.6.0.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css'
+  '/dashboard',
+  '/lan-chat',
+  '/p2p-chat',
+  '/static/css/find_your_team_base.css',
+  '/static/css/find_your_team_components.css',
+  '/static/css/find_your_team_hero.css',
+  '/static/css/p2p_chat.css',
+  '/static/js/find_your_team.js',
+  '/static/js/communication.js',
+  '/static/js/p2p_chat_client.js',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js'
 ];
 
 // Install event - cache resources

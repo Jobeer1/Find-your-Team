@@ -4,6 +4,51 @@
 
 Find Your Team is a free, open-source platform that ensures no human talent is wasted by connecting people with their purpose and the teams where they can add the most value to the people they love.
 
+## 🚀 Quick Start
+
+### 1. Get Your AWS Credentials
+
+1. Go to [AWS IAM Console](https://console.aws.amazon.com/iam/home#/security_credentials)
+2. Create a new IAM user or use an existing one
+3. Attach these managed policies:
+   - `AmazonBedrockFullAccess`
+   - `AmazonDynamoDBFullAccess`
+   - `AmazonIoTCoreFullAccess`
+   - `CloudWatchFullAccess`
+   - `AmazonOpenSearchServiceFullAccess`
+4. Create access keys and note down:
+   - `Access Key ID`
+   - `Secret Access Key`
+
+### 2. Configure the Application
+
+1. Copy the configuration template:
+   ```bash
+   cp config.ini.template config.ini
+   ```
+
+2. Edit `config.ini` and add your AWS credentials:
+   ```ini
+   [AWS]
+   aws_access_key_id = YOUR_ACCESS_KEY_ID_HERE
+   aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_HERE
+   aws_region = us-east-1
+   ```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Application
+
+```bash
+python app.py
+```
+
+Open http://localhost:5000 in your browser and start maximizing human potential!
+
 ## 🎯 Hackathon Strategy
 
 This solution is designed to **win first place** by hitting all key judging criteria:

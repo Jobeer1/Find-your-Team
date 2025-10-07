@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Chat - Find Your Team</title>
+    
+    <!-- Meta tags for PWA -->
+    <meta name="description" content="Advanced P2P chat with file transfer capabilities">
+    <meta name="theme-color" content="#007A4D">
+    <link rel="manifest" href="/static/manifest.json">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/css/p2p_chat.css">
+    <link rel="stylesheet" href="/static/css/chat_mode_selector.css">
+    
+    <!-- SocketIO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="chat-sidebar">
+            <!-- Sidebar Header -->
+            <div class="chat-sidebar-header">
+                <div>
+                    <h2><i class="fas fa-comments"></i> P2P Chat</h2>
+                    <div id="connection-status" class="connection-status">Connecting...</div>
+                </div>
+                <button class="new-chat-btn" onclick="chatClient.showNewChatDialog()" title="New Chat">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <!-- User Search -->
+            <div class="user-search-container">
+                <input type="text" id="user-search" class="user-search" placeholder="Search users to chat with...">
+                <div id="user-search-results" class="user-search-results"></div>
+            </div>
+            
+            <!-- Chat List -->
+            <div id="chat-list" class="chat-list">
+                <!-- Chats will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Main Chat Area -->
+        <div class="chat-main">
+            <!-- Chat Header -->
+            <div id="chat-header" class="chat-header">
+                <div class="chat-header-info">
+                    <h3>Select a chat to start messaging</h3>
+                    <div class="participant-count"></div>
+                </div>
+                <div class="chat-header-actions">
+                    <button onclick="chatClient.showChatInfo()" title="Chat Info">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                    <button onclick="chatClient.showChatSettings()" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Messages Container -->
+            <div id="messages-container" class="messages-container">
+                <!-- Welcome message -->
+                <div class="welcome-message">
+                    <div class="welcome-content">
+                        <i class="fas fa-comments welcome-icon"></i>
+                        <h3>Welcome to P2P Chat!</h3>
+                        <p>Start a conversation by searching for users or select an existing chat from the sidebar.</p>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-bolt"></i>
+                                <span>Real-time messaging</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-file-upload"></i>
+                                <span>File & folder sharing</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-signal"></i>
+                                <span>Bandwidth optimization</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Secure communication</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Message Input -->
+            <div class="message-input-container">
+                <button id="file-button" class="file-button" title="Attach File">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <textarea id="message-input" class="message-input" 
+                         placeholder="Type a message... (Shift+Enter for new line)"
+                         rows="1"></textarea>
+                <button id="send-button" class="send-button" title="Send Message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden file input for uploads -->
+    <input type="file" id="hidden-file-input" multiple style="display: none;">
+    
+    <!-- Modals and overlays will be inserted here by JavaScript -->
+    
+    <!-- Scripts -->
+    <script src="/static/js/chat_mode_selector.js"></script>
+    <script src="/static/js/p2p_chat_client.js"></script>
+    
+    <style>
+        /* Welcome message styles */
+        .welcome-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: #666;
+        }
+        
+        .welcome-content {
+            max-width: 400px;
+            padding: 40px 20px;
+        }
+        
+        .welcome-icon {
+            font-size: 64px;
+            color: #007A4D;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-content h3 {
+            margin: 0 0 15px 0;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .features-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .feature-item i {
+            color: #007A4D;
+            width: 16px;
+        }
+        
+        .new-chat-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .new-chat-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-content {
+                padding: 20px;
+            }
+            
+            .welcome-icon {
+                font-size: 48px;
+            }
+        }
+        
+        /* Loading states */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .loading i {
+            margin-right: 8px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Connection quality indicator */
+        .connection-quality {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            z-index: 1000;
+        }
+        
+        .connection-quality.high { border-left: 3px solid #28a745; }
+        .connection-quality.medium { border-left: 3px solid #ffc107; }
+        .connection-quality.low { border-left: 3px solid #dc3545; }
+        
+        /* File drop zone */
+        .file-drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 122, 77, 0.9);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-size: 1.2rem;
+            z-index: 1000;
+        }
+        
+        .file-drop-zone.active {
+            display: flex;
+        }
+        
+        .file-drop-zone i {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+    </style>
+    
+    <script>
+        // Initialize enhanced chat system
+        let modeSelector;
+        let enhancedChatClient;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize chat mode selector
+            modeSelector = new ChatModeSelector({
+                containerId: 'chat-mode-panel',
+                showNotifications: true,
+                autoHide: false
+            });
+            
+            // Initialize enhanced chat client with mode awareness
+            if (typeof P2PChatClient !== 'undefined' && !window.enhancedChatClient) {
+                console.log('Creating new P2P Chat Client instance');
+                window.enhancedChatClient = new P2PChatClient();
+                enhancedChatClient = window.enhancedChatClient;
+                
+                // Connect mode selector to chat client
+                modeSelector.on('onModeChange', function(modeInfo) {
+                    enhancedChatClient.handleModeChange(modeInfo);
+                });
+            } else if (window.enhancedChatClient) {
+                console.log('Using existing P2P Chat Client instance');
+                enhancedChatClient = window.enhancedChatClient;
+            } else {
+                console.log('P2PChatClient class not available');
+            }
+            
+            console.log('Enhanced P2P Chat initialized with local storage and mode management');
+            
+            const chatMain = document.querySelector('.chat-main');
+            const dropZone = document.createElement('div');
+            dropZone.className = 'file-drop-zone';
+            dropZone.innerHTML = `
+                <i class="fas fa-cloud-upload-alt"></i>
+                <div>Drop files here to share</div>
+            `;
+            chatMain.appendChild(dropZone);
+            
+            // Drag and drop handlers
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                chatMain.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                chatMain.addEventListener(eventName, () => {
+                    dropZone.classList.add('active');
+                }, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                chatMain.addEventListener(eventName, () => {
+                    dropZone.classList.remove('active');
+                }, false);
+            });
+            
+            chatMain.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0 && window.chatClient) {
+                    files.forEach(file => chatClient.uploadFile(file));
+                }
+            }
+            
+            // Connection quality detection
+            function updateConnectionQuality() {
+                if ('connection' in navigator) {
+                    const connection = navigator.connection;
+                    let qualityIndicator = document.querySelector('.connection-quality');
+                    
+                    if (!qualityIndicator) {
+                        qualityIndicator = document.createElement('div');
+                        qualityIndicator.className = 'connection-quality';
+                        document.body.appendChild(qualityIndicator);
+                    }
+                    
+                    const effectiveType = connection.effectiveType;
+                    let quality = 'high';
+                    let text = 'High Speed';
+                    
+                    if (effectiveType === 'slow-2g' || effectiveType === '2g') {
+                        quality = 'low';
+                        text = 'Low Speed';
+                    } else if (effectiveType === '3g') {
+                        quality = 'medium';  
+                        text = 'Medium Speed';
+                    }
+                    
+                    qualityIndicator.className = `connection-quality ${quality}`;
+                    qualityIndicator.textContent = text;
+                }
+            }
+            
+            updateConnectionQuality();
+            
+            // Update quality when connection changes
+            if ('connection' in navigator) {
+                navigator.connection.addEventListener('change', updateConnectionQuality);
+            }
+        });
+        
+        // Service Worker registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
