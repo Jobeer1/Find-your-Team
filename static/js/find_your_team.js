@@ -437,35 +437,70 @@
     }
 
     function initializeSocket() {
-        socket = io();
-        
-        socket.on('connect', function() {
-            updateConnectionStatus(true);
-        });
-        
-        socket.on('disconnect', function() {
+        // Initialize Socket.IO connection
+        if (typeof io !== 'undefined') {
+            try {
+                window.socket = io();
+                
+                if (window.socket) {
+                    console.log('Socket.IO initialized successfully');
+                    
+                    // Set up socket event handlers
+                    window.socket.on('connect', function() {
+                        console.log('Socket.IO connected');
+                        updateConnectionStatus(true);
+                    });
+                    
+                    window.socket.on('disconnect', function() {
+                        console.log('Socket.IO disconnected');
+                        updateConnectionStatus(false);
+                    });
+                    
+                    // Set up other event handlers
+                    setupSocketEventHandlers();
+                } else {
+                    throw new Error('Socket.IO object is null');
+                }
+                
+            } catch (error) {
+                console.error('Socket.IO initialization failed:', error);
+                console.log('Socket.IO not available - using API-only mode');
+                window.socket = null;
+                updateConnectionStatus(false);
+            }
+        } else {
+            console.log('Socket.IO not available - using API-only mode');
+            window.socket = null;
             updateConnectionStatus(false);
-        });
-        
-        socket.on('message', function(data) {
-            receiveMessage(data);
-        });
-        
-        socket.on('typing', function(data) {
-            showTypingIndicator(data.agent);
-        });
-        
-        socket.on('match_found', function(data) {
-            handleMatchFound(data);
-        });
-        
-        socket.on('team_update', function(data) {
-            handleTeamUpdate(data);
-        });
-        
-        socket.on('gamification_update', function(data) {
-            updateGamification(data);
-        });
+        }
+    }
+    
+    function setupSocketEventHandlers() {
+        if (window.socket && typeof window.socket.on === 'function') {
+            window.socket.on('message', function(data) {
+                receiveMessage(data);
+            });
+            
+            window.socket.on('typing', function(data) {
+                showTypingIndicator(data.agent);
+            });
+            
+            window.socket.on('match_found', function(data) {
+                handleMatchFound(data);
+            });
+            
+            window.socket.on('team_update', function(data) {
+                handleTeamUpdate(data);
+            });
+            
+            window.socket.on('gamification_update', function(data) {
+                updateGamification(data);
+            });
+            
+            window.socket.on('agent_response', function(data) {
+                handleAgentResponse(data);
+            });
+        }
     }
 
     function initializeChat() {
@@ -919,10 +954,12 @@
         const match = matches.find(m => m.id === matchId);
         if (match) {
             // Send connection request
-            socket.emit('connect_request', {
-                match_id: matchId,
-                user_id: getUserId()
-            });
+            if (window.socket) {
+                window.socket.emit('connect_request', {
+                    match_id: matchId,
+                    user_id: getUserId()
+                });
+            }
             
             // Show success message
             showNotification('Connection request sent!', 'success');
@@ -1141,11 +1178,64 @@
         });
     }
 
+    function handleAgentResponse(data) {
+        console.log('Agent response received:', data);
+        
+        // Handle different types of agent responses
+        if (data.agent === 'onboarding') {
+            handleOnboardingResponse(data);
+        } else if (data.agent === 'matching') {
+            handleMatchingResponse(data);
+        } else if (data.agent === 'team') {
+            handleTeamResponse(data);
+        }
+        
+        // Update UI with confidence score if available
+        if (data.confidence_score) {
+            updateConfidenceIndicator(data.confidence_score);
+        }
+    }
+    
+    function handleOnboardingResponse(data) {
+        // Add the agent response to the chat
+        if (data.message || data.response) {
+            addMessage(data.message || data.response, 'agent', 'onboarding');
+        }
+        
+        // Check for handoff
+        if (data.handoff) {
+            console.log('Agent handoff detected:', data.handoff);
+            showNotification(`Connecting you with ${data.handoff.to_agent} agent...`, 'info');
+        }
+    }
+    
+    function handleMatchingResponse(data) {
+        // Handle matching agent responses
+        if (data.matches) {
+            displayMatches(data.matches);
+        }
+    }
+    
+    function handleTeamResponse(data) {
+        // Handle team agent responses
+        if (data.team_health) {
+            updateTeamHealthIndicator(data.team_health);
+        }
+    }
+    
+    function updateConfidenceIndicator(score) {
+        const indicator = document.querySelector('.confidence-indicator');
+        if (indicator) {
+            indicator.textContent = `${Math.round(score * 100)}% confidence`;
+            indicator.className = `confidence-indicator ${score > 0.8 ? 'high' : score > 0.5 ? 'medium' : 'low'}`;
+        }
+    }
+
     function updateConnectionStatus(connected = null) {
         const statusIndicator = document.querySelector('.connection-status');
         if (!statusIndicator) return;
         
-        const isConnected = connected !== null ? connected : (socket && socket.connected);
+        const isConnected = connected !== null ? connected : (window.socket && window.socket.connected);
         const statusDot = statusIndicator.querySelector('.status-dot');
         const statusText = statusIndicator.querySelector('.status-text');
         

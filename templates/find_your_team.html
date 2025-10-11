@@ -13,8 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Socket.IO for real-time communication -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script src="/static/js/communication.js"></script>
     <link rel="stylesheet" href="/static/css/find_your_team_base.css">
     <link rel="stylesheet" href="/static/css/find_your_team_hero.css">
     <link rel="stylesheet" href="/static/css/find_your_team_components.css">
@@ -59,7 +59,51 @@
                 Maximize human potential by connecting people with their purpose and the teams where they can add the most value to the people they love.
             </p>
             
-            <div class="hero-cta" data-aos="fade-up" data-aos-delay="200">
+            <!-- Onboarding Chat Interface -->
+            <div class="hero-chat-container" data-aos="fade-up" data-aos-delay="200">
+                <div class="chat-card">
+                    <div class="chat-header">
+                        <div class="chat-avatar">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="chat-info">
+                            <h3>Your AI Guide</h3>
+                            <p class="chat-status" id="personalized-welcome">🌟 Warm welcome to you! 🌟</p>
+                            <p class="chat-subtitle">Ready to help you discover your purpose</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-messages" id="hero-onboarding-chat">
+                        <div class="message agent-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="message-content">
+                                <strong>Your AI Guide</strong>
+                                🌟 Welcome! We are here to help you find your team and your purpose. 
+                                <br><br>
+                                What brings you here today? Are you looking to find your ideal team, discover your unique strengths, or build something meaningful with like-minded people?
+                                <br><br>
+                                I'm excited to learn about you! 🚀
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <div class="input-wrapper">
+                            <textarea id="hero-onboarding-input" 
+                                    placeholder="Tell me what brings you here today..." 
+                                    maxlength="1000"></textarea>
+                            <button id="hero-send-message" class="send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="char-counter">0/1000</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-cta" data-aos="fade-up" data-aos-delay="400">
                 <button class="btn btn-xl btn-primary" id="start-journey-btn">
                     <i class="fas fa-rocket"></i>
                     <span>Start Your Journey</span>
@@ -445,10 +489,12 @@
     </div>
 
     <script src="/static/js/find_your_team.js"></script>
-    <script src="/static/js/enhanced_chat.js"></script></script>
+    <!-- Enhanced chat script for real-time features -->
+    <script src="/static/js/enhanced_chat.js"></script>
     <script>
         // Check login status and update navbar
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
             const user = JSON.parse(localStorage.getItem('user') || 'null');
             const authenticatedNav = document.getElementById('authenticated-nav');
             const guestNav = document.getElementById('guest-nav');
@@ -473,14 +519,22 @@
                 }
             }
             
-            // Setup Start Journey button
+            // Setup Start Journey button to start onboarding
             const startJourneyBtn = document.getElementById('start-journey-btn');
             if (startJourneyBtn) {
                 startJourneyBtn.addEventListener('click', function() {
-                    // Navigate to login page
-                    window.location.href = '/login';
+                    startOnboardingJourney();
                 });
             }
+            
+            // Setup onboarding input immediately
+            setupOnboardingInput();
+            
+            // Auto-start onboarding for new visitors
+            setTimeout(() => {
+                console.log('Auto-starting onboarding...');
+                startOnboardingJourney();
+            }, 1000); // Start after 1 second
         });
         
         function logout() {
@@ -552,6 +606,248 @@
             } finally {
                 button.innerHTML = originalText;
                 button.disabled = false;
+            }
+        }
+        
+        // Onboarding functionality
+        let conversationId = null;
+        
+        async function startOnboardingJourney() {
+            console.log('Starting onboarding journey...');
+            try {
+                // Mark onboarding as started
+                localStorage.setItem('onboarding_started', 'true');
+                
+                // Start onboarding conversation
+                const response = await fetch('/api/onboarding/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                conversationId = data.conversation_id;
+                
+                // Update personalized welcome in header
+                const welcomeElement = document.getElementById('personalized-welcome');
+                if (welcomeElement && data.location) {
+                    welcomeElement.innerHTML = `🌟 Warm welcome to you in ${data.location}! 🌟`;
+                }
+                
+                // Show simplified welcome message in chat
+                const chatArea = document.getElementById('hero-onboarding-chat');
+                if (chatArea) {
+                    chatArea.innerHTML = `
+                        <div class="message agent-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="message-content">
+                                <strong>Your AI Guide</strong>
+                                We are here to help you find your team and your purpose. Every person has unique gifts and talents that the world needs, and we believe you're no exception.
+                                <br><br>
+                                ✨ What brings you here today? Are you looking to:
+                                <br>• Find your ideal team to join?
+                                <br>• Discover your unique strengths and purpose?
+                                <br>• Build something meaningful with like-minded people?
+                                <br>• Or something else entirely?
+                                <br><br>
+                                I'm excited to learn about you! 🚀
+                            </div>
+                        </div>
+                    `;
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }
+                
+                // Enable input
+                const input = document.getElementById('hero-onboarding-input');
+                const sendBtn = document.getElementById('hero-send-message');
+                if (input) input.disabled = false;
+                if (sendBtn) sendBtn.disabled = false;
+                
+                // Setup input handler
+                setupOnboardingInput();
+                
+            } catch (error) {
+                console.error('Error starting onboarding:', error);
+                // Fallback message
+                const chatArea = document.getElementById('hero-onboarding-chat');
+                if (chatArea) {
+                    chatArea.innerHTML = `
+                        <div class="message agent-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="message-content">
+                                <strong>Your AI Guide</strong>
+                                🌟 Welcome! We are here to help you find your team and your purpose. Are you ready for the journey?<br><br>
+                                What brings you here today? Tell me about what you're passionate about!
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Enable input
+                const input = document.getElementById('hero-onboarding-input');
+                const sendBtn = document.getElementById('hero-send-message');
+                if (input) input.disabled = false;
+                if (sendBtn) sendBtn.disabled = false;
+                
+                setupOnboardingInput();
+            }
+        }
+        
+        function setupOnboardingInput() {
+            const input = document.getElementById('hero-onboarding-input');
+            const sendBtn = document.getElementById('hero-send-message');
+            
+            if (input && sendBtn) {
+                // Handle Enter key
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendOnboardingMessage();
+                    }
+                });
+                
+                // Handle send button
+                sendBtn.addEventListener('click', sendOnboardingMessage);
+                
+                // Character counter
+                input.addEventListener('input', function() {
+                    const counter = document.querySelector('.char-counter');
+                    if (counter) {
+                        counter.textContent = `${input.value.length}/1000`;
+                    }
+                });
+                
+                // Focus on input
+                input.focus();
+            }
+        }
+        
+        async function sendOnboardingMessage() {
+            const input = document.getElementById('hero-onboarding-input');
+            const chatArea = document.getElementById('hero-onboarding-chat');
+            const sendBtn = document.getElementById('hero-send-message');
+            
+            if (!input || !chatArea) return;
+            
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Disable input while processing
+            input.disabled = true;
+            if (sendBtn) sendBtn.disabled = true;
+            
+            // Add user message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.innerHTML = `
+                <div class="message-content">
+                    <strong>You</strong>
+                    ${message.replace(/\n/g, '<br>')}
+                </div>
+                <div class="message-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            `;
+            chatArea.appendChild(userMessageDiv);
+            
+            // Clear input
+            input.value = '';
+            
+            // Show typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message agent-message typing';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="message-content">
+                    <strong>Your AI Guide</strong>
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatArea.appendChild(typingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            try {
+                // Send message to backend
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_id: conversationId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Remove typing indicator
+                chatArea.removeChild(typingDiv);
+                
+                // Add AI response with error handling
+                const aiResponse = data.message || data.response || "I'm here to help you discover your strengths and find your perfect team! What would you like to know about yourself or team formation?";
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message agent-message';
+                aiMessageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="message-content">
+                        <strong>Your AI Guide</strong>
+                        ${aiResponse.replace(/\n/g, '<br>')}
+                    </div>
+                `;
+                chatArea.appendChild(aiMessageDiv);
+                
+                // Update conversation ID if provided
+                if (data.conversation_id) {
+                    conversationId = data.conversation_id;
+                }
+                
+                // Update confidence progress (simulate based on message count)
+                const messageCount = data.message_count || 0;
+                const confidence = Math.min(messageCount * 10, 100);
+                const progressBar = document.getElementById('confidence-progress');
+                const progressText = document.getElementById('confidence-text');
+                if (progressBar) progressBar.style.width = `${confidence}%`;
+                if (progressText) progressText.textContent = `${confidence}%`;
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                
+                // Remove typing indicator
+                if (chatArea.contains(typingDiv)) {
+                    chatArea.removeChild(typingDiv);
+                }
+                
+                // Show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message agent-message';
+                errorDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="message-content">
+                        <strong>System</strong>
+                        I'm having trouble connecting right now. Please try again in a moment!
+                    </div>
+                `;
+                chatArea.appendChild(errorDiv);
+            } finally {
+                // Re-enable input
+                input.disabled = false;
+                if (sendBtn) sendBtn.disabled = false;
+                input.focus();
+                chatArea.scrollTop = chatArea.scrollHeight;
             }
         }
     </script>

@@ -8,3 +8,9 @@ __pycache__/
 config.ini
 .env
 config.ini.local
+*.db
+*.wav
+cache/
+cloudflared.exe
+app.exe
+node_modules/

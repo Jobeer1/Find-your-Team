@@ -1,0 +1,17 @@
+{
+  "name": "find-your-team",
+  "version": "1.0.0",
+  "description": "AI-powered team formation platform",
+  "main": "app.py",
+  "scripts": {
+    "build": "echo 'Build complete'",
+    "start": "python app.py",
+    "dev": "python app.py"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20241011.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

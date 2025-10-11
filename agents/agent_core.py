@@ -103,11 +103,22 @@ class BedrockAgentCore:
         self.aws_config = aws_config
         
         # Handle demo mode gracefully
-        if aws_config.demo_mode or not aws_config.session:
+        if aws_config.demo_mode or not hasattr(aws_config, 'bedrock') or aws_config.bedrock is None:
             self.bedrock_agent = None
             self.bedrock = None
         else:
-            self.bedrock_agent = aws_config.session.client('bedrock-agent-runtime')
+            # Create bedrock-agent-runtime client if needed
+            try:
+                import boto3
+                self.bedrock_agent = boto3.client(
+                    'bedrock-agent-runtime',
+                    region_name=aws_config.region,
+                    aws_access_key_id=aws_config.access_key,
+                    aws_secret_access_key=aws_config.secret_key
+                )
+            except Exception as e:
+                logger.warning(f"Failed to create bedrock-agent-runtime client: {e}")
+                self.bedrock_agent = None
             self.bedrock = aws_config.bedrock
         
         # Agent configurations
@@ -131,10 +142,14 @@ class BedrockAgentCore:
         # For hackathon demo, we'll configure agents that work with Claude directly
         # In production, these would be actual Bedrock Agent IDs
         
+        # Use the same model ID as configured in aws_config
+        model_id = getattr(self.aws_config, 'bedrock_model_id', 'anthropic.claude-3-5-sonnet-20240620-v1:0')
+        
         self.agents[AgentType.ONBOARDING] = AgentConfiguration(
             agent_id="onboarding-agent-demo",
             agent_alias="onboarding-v1", 
             agent_type=AgentType.ONBOARDING,
+            model_id=model_id,
             handoff_threshold=0.9
         )
         
@@ -142,6 +157,7 @@ class BedrockAgentCore:
             agent_id="matching-agent-demo",
             agent_alias="matching-v1",
             agent_type=AgentType.MATCHING,
+            model_id=model_id,
             handoff_threshold=0.8
         )
         
@@ -149,6 +165,7 @@ class BedrockAgentCore:
             agent_id="team-agent-demo", 
             agent_alias="team-v1",
             agent_type=AgentType.TEAM,
+            model_id=model_id,
             handoff_threshold=0.85
         )
         

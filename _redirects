@@ -1,0 +1,18 @@
+# Cloudflare Pages redirects for Find Your Team
+
+# API routes
+/api/* /api/:splat 200
+/socket.io/* /socket.io/:splat 200
+
+# Static files
+/static/* /static/:splat 200
+
+# Main routes
+/dashboard /dashboard 200
+/p2p-chat /p2p-chat 200
+/login /login 200
+/signup /signup 200
+/profile /profile 200
+
+# Fallback to index
+/* /index.html 200

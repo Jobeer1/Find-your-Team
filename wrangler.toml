@@ -1,0 +1,13 @@
+name = "find-your-team"
+compatibility_date = "2024-10-07"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+FLASK_ENV = "production"
+PORT = "8080"
+
+[env.production]
+name = "find-your-team"
+
+[env.preview]
+name = "find-your-team-preview"
