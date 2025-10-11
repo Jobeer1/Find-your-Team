@@ -1,0 +1,23 @@
+# Minimal requirements for Find Your Team - Core functionality only
+Flask==3.1.0
+boto3==1.35.0
+pydantic==2.9.0
+python-dotenv==1.0.1
+requests==2.32.3
+flask-socketio==5.3.6
+eventlet==0.33.3
+websocket-client==1.8.0
+
+# Optional: Only install if you need WebRTC features
+# aiortc==1.6.0  # Requires Visual C++ Build Tools on Windows
+# websockets==11.0.3
+
+# Testing (optional)
+# pytest==8.3.0
+
+# AWS CDK (only needed for infrastructure deployment)
+# aws-cdk-lib==2.160.0
+# constructs>=10.0.0
+
+# MQTT for IoT features (optional)
+# paho-mqtt==1.6.1

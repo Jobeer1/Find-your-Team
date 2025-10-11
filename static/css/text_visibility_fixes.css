@@ -1,0 +1,98 @@
+/* Text Visibility Fixes for Find Your Team */
+
+/* Ensure all hero text has proper contrast */
+.hero * {
+    position: relative;
+    z-index: 10;
+}
+
+/* Force "Find Your Team" title to be solid white */
+.hero h1 {
+    color: #ffffff !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-clip: unset !important;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 2px 10px rgba(0, 0, 0, 0.7), 0 1px 5px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Improve status indicator visibility */
+.status-indicator {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+    font-weight: 700 !important;
+}
+
+/* Improve hero stats visibility */
+.hero-stat {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-stat-number {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+}
+
+.hero-stat-label {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Improve testimonial visibility */
+.testimonial {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Reduce floating element interference on desktop */
+@media (min-width: 769px) {
+    .floating-element {
+        opacity: 0.2 !important;
+        background: rgba(255, 255, 255, 0.02) !important;
+    }
+    
+    /* Make floating elements even smaller */
+    .floating-element {
+        width: 40px !important;
+        height: 40px !important;
+    }
+}
+
+/* Completely hide floating elements if they still cause issues */
+.hero-content:hover ~ .floating-elements .floating-element {
+    opacity: 0.1;
+    transition: opacity 0.3s ease;
+}
+
+/* Ensure chat container has good visibility */
+.hero-chat-container {
+    position: relative;
+    z-index: 15 !important;
+}
+
+/* Improve button visibility */
+.hero-cta .btn {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Additional title visibility fixes */
+.hero h1,
+.hero-content h1,
+h1 {
+    color: #ffffff !important;
+    background: none !important;
+    background-image: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-clip: unset !important;
+}
+
+/* Ensure subtitle is also clearly visible */
+.hero-subtitle {
+    color: #ffffff !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+}

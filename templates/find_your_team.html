@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="/static/css/find_your_team_features.css">
     <link rel="stylesheet" href="/static/css/find_your_team_utils.css">
     <link rel="stylesheet" href="/static/css/enhanced_chat.css">
+    <link rel="stylesheet" href="/static/css/mobile_improvements.css">
+    <link rel="stylesheet" href="/static/css/text_visibility_fixes.css">
 </head>
 <body>
     <!-- Navigation Header -->
@@ -34,10 +36,10 @@
                 <a href="/dashboard" class="btn btn-outline btn-sm">Dashboard</a>
                 <button onclick="logout()" class="btn btn-outline btn-sm">Logout</button>
             </div>
-            <!-- Login buttons only shown when not logged in -->
+            <!-- Optional login buttons - less prominent -->
             <div id="guest-nav">
-                <a href="/login" class="btn btn-outline btn-sm">Login</a>
-                <a href="/signup" class="btn btn-primary btn-sm">Sign Up</a>
+                <a href="/login" class="btn btn-outline btn-sm" style="opacity: 0.8;">Login</a>
+                <a href="/signup" class="btn btn-outline btn-sm" style="opacity: 0.9;">Sign Up</a>
             </div>
         </div>
     </nav>
@@ -80,11 +82,12 @@
                             </div>
                             <div class="message-content">
                                 <strong>Your AI Guide</strong>
-                                🌟 Welcome! We are here to help you find your team and your purpose. 
+
+                                🌟 Welcome! No signup needed - let's start your journey right now! 
                                 <br><br>
-                                What brings you here today? Are you looking to find your ideal team, discover your unique strengths, or build something meaningful with like-minded people?
+                                Every person has unique gifts that the world needs. I'm here to help you discover yours and connect you with people who share your vision.
                                 <br><br>
-                                I'm excited to learn about you! 🚀
+                                What brings you here today? Tell me about something you're passionate about or a problem you'd love to help solve! 💫
                             </div>
                         </div>
                     </div>
@@ -92,7 +95,8 @@
                     <div class="chat-input-container">
                         <div class="input-wrapper">
                             <textarea id="hero-onboarding-input" 
-                                    placeholder="Tell me what brings you here today..." 
+
+                                    placeholder="Share what you're passionate about... no login required! 🌟" 
                                     maxlength="1000"></textarea>
                             <button id="hero-send-message" class="send-btn">
                                 <i class="fas fa-paper-plane"></i>
@@ -105,18 +109,20 @@
             
             <div class="hero-cta" data-aos="fade-up" data-aos-delay="400">
                 <button class="btn btn-xl btn-primary" id="start-journey-btn">
-                    <i class="fas fa-rocket"></i>
-                    <span>Start Your Journey</span>
+
+                    <i class="fas fa-heart"></i>
+                    <span>Discover Your Purpose</span>
                 </button>
                 <button class="btn btn-xl btn-outline" onclick="copyShareLink()">
                     <i class="fas fa-share-alt"></i>
-                    <span>Share the Vision</span>
+                    <span>Share with Friends</span>
                 </button>
             </div>
             
             <div class="status-indicator status-online" data-aos="fade-up" data-aos-delay="300">
                 <div class="status-dot"></div>
-                <span>Platform Online - Helping Communities Worldwide</span>
+
+                <span>🌟 Free & Open - No Login Required - Start Immediately 🌟</span>
             </div>
             
             <div class="hero-stats" data-aos="fade-up" data-aos-delay="400">
@@ -190,7 +196,7 @@
 
                 <div class="input-group">
                     <div class="input-wrapper">
-                        <textarea id="onboarding-input" placeholder="Share what's on your heart... What do you care deeply about?" maxlength="1000"></textarea>
+                        <textarea id="onboarding-input" placeholder="Share what's on your heart... What makes you feel most alive? (No account needed!)" maxlength="1000"></textarea>
                         <div class="char-counter">
                             <span id="char-count">0</span>/1000
                         </div>
@@ -534,6 +540,9 @@
             setTimeout(() => {
                 console.log('Auto-starting onboarding...');
                 startOnboardingJourney();
+
+                // Ensure chat visibility on mobile
+                ensureChatVisibility();
             }, 1000); // Start after 1 second
         });
         
@@ -541,6 +550,37 @@
             localStorage.removeItem('user');
             localStorage.removeItem('token');
             window.location.reload();
+        }
+        
+        // Improve mobile experience by ensuring chat is visible
+        function ensureChatVisibility() {
+            const heroChat = document.querySelector('.hero-chat-container');
+            if (heroChat && window.innerWidth <= 768) {
+                // Scroll to chat on mobile after a short delay
+                setTimeout(() => {
+                    heroChat.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }, 1500);
+                
+                // Stop pulse animation when user interacts
+                const chatInput = document.querySelector('#hero-onboarding-input');
+                const sendButton = document.querySelector('#hero-send-message');
+                
+                function stopPulse() {
+                    heroChat.classList.add('user-interacted');
+                }
+                
+                if (chatInput) {
+                    chatInput.addEventListener('focus', stopPulse);
+                    chatInput.addEventListener('input', stopPulse);
+                }
+                
+                if (sendButton) {
+                    sendButton.addEventListener('click', stopPulse);
+                }
+            }
         }
         
         async function extractInsights() {

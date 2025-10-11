@@ -248,6 +248,30 @@
         align-items: center;
         gap: 12px;
         margin-bottom: 12px;
+        justify-content: center;
+        text-align: center;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 25px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Mobile status indicator improvements */
+    @media (max-width: 768px) {
+        .status-indicator {
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            gap: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .status-indicator {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            gap: 6px;
+        }
     }
 
     .status-dot {

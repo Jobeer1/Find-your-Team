@@ -42,15 +42,19 @@ logger = logging.getLogger(__name__)
 
 # Import communication setup with error handling
 try:
+
+    # Try to import eventlet first to catch SSL issues
+    import eventlet
     from communication.flask_integration import setup_communication
     COMMUNICATION_AVAILABLE = True
-except ImportError as e:
-    print(f"Communication dependencies not available: {e}")
+except (ImportError, AttributeError) as e:
+    print(f"Communication dependencies not available (this is OK): {e}")
     COMMUNICATION_AVAILABLE = False
     
     def setup_communication(app):
         """Stub for when communication is not available"""
-        print("Communication setup skipped - dependencies not available")
+
+        print("Communication setup skipped - using basic Flask server")
         return None
 
 # Import enhanced P2P chat system with error handling
@@ -644,7 +648,22 @@ else:
     logger.warning("Agent system not available - running without agent orchestration")
 
 # Initialize communication system
-communication_manager = setup_communication(app)
+
+try:
+    communication_manager = setup_communication(app)
+    logger.info("Communication system initialized successfully")
+except Exception as e:
+    logger.error(f"Communication system failed: {e}")
+    logger.info("Falling back to simple SocketIO setup")
+    communication_manager = None
+    # Fallback to simple setup
+    try:
+        from simple_socketio_setup import setup_simple_socketio
+        setup_simple_socketio(app)
+        logger.info("Simple SocketIO setup successful")
+    except Exception as e2:
+        logger.error(f"Simple SocketIO setup also failed: {e2}")
+        logger.info("Continuing without SocketIO - basic HTTP only")
 
 # Initialize enhanced P2P chat system
 if P2P_CHAT_AVAILABLE and communication_manager and hasattr(communication_manager, 'socketio'):

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Test - Find Your Team</title>
+    <link rel="stylesheet" href="/static/css/find_your_team_base.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_hero.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_components.css">
+    <link rel="stylesheet" href="/static/css/enhanced_chat.css">
+    <link rel="stylesheet" href="/static/css/mobile_improvements.css">
+    <style>
+        /* Quick test styles */
+        body { margin: 0; padding: 0; }
+        .test-container { 
+            max-width: 400px; 
+            margin: 0 auto; 
+            border: 2px solid #ccc; 
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <!-- Navigation Header -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h2>Find Your Team</h2>
+            </div>
+            <div class="nav-actions">
+                <div id="guest-nav">
+                    <a href="/login" class="btn btn-outline btn-sm" style="opacity: 0.8;">Login</a>
+                    <a href="/signup" class="btn btn-outline btn-sm" style="opacity: 0.9;">Sign Up</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Find Your Team</h1>
+                <p class="hero-subtitle">
+                    Maximize human potential by connecting people with their purpose and the teams where they can add the most value.
+                </p>
+                
+                <!-- Onboarding Chat Interface -->
+                <div class="hero-chat-container">
+                    <div class="chat-card">
+                        <div class="chat-header">
+                            <div class="chat-avatar">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="chat-info">
+                                <h3>Your AI Guide</h3>
+                                <p class="chat-status" id="personalized-welcome">🌟 No signup needed - start now! 🌟</p>
+                                <p class="chat-subtitle">Ready to help you discover your purpose</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="hero-onboarding-chat">
+                            <div class="message agent-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="message-content">
+                                    <strong>Your AI Guide</strong>
+                                    🌟 Welcome! No signup needed - let's start your journey right now! 
+                                    <br><br>
+                                    Every person has unique gifts that the world needs. I'm here to help you discover yours and connect you with people who share your vision.
+                                    <br><br>
+                                    What brings you here today? Tell me about something you're passionate about! 💫
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <div class="input-wrapper">
+                                <textarea id="hero-onboarding-input" 
+                                        placeholder="Share what you're passionate about... no login required! 🌟" 
+                                        maxlength="1000"></textarea>
+                                <button id="hero-send-message" class="send-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                            <div class="char-counter">0/1000</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-cta">
+                    <button class="btn btn-xl btn-primary">
+                        <i class="fas fa-heart"></i>
+                        <span>Discover Your Purpose</span>
+                    </button>
+                </div>
+                
+                <div class="status-indicator status-online">
+                    <div class="status-dot"></div>
+                    <span>🌟 Free & Open - No Login Required - Start Immediately 🌟</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test mobile interaction
+        document.addEventListener('DOMContentLoaded', function() {
+            const heroChat = document.querySelector('.hero-chat-container');
+            const chatInput = document.querySelector('#hero-onboarding-input');
+            const sendButton = document.querySelector('#hero-send-message');
+            
+            function stopPulse() {
+                if (heroChat) {
+                    heroChat.classList.add('user-interacted');
+                }
+            }
+            
+            if (chatInput) {
+                chatInput.addEventListener('focus', stopPulse);
+                chatInput.addEventListener('input', stopPulse);
+            }
+            
+            if (sendButton) {
+                sendButton.addEventListener('click', stopPulse);
+            }
+        });
+    </script>
+</body>
+</html>

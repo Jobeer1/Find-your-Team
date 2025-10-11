@@ -599,6 +599,9 @@ ero Chat Interface Styling */
 .hero-chat-container {
     max-width: 600px;
     margin: 2rem auto;
+    /* Ensure it's always visible and prominent */
+    position: relative;
+    z-index: 5;
     padding: 0 1rem;
 }
 
@@ -811,25 +814,59 @@ ero Chat Interface Styling */
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero-chat-container {
-        margin: 1.5rem auto;
+        margin: 1rem auto 2rem;
         padding: 0 0.5rem;
+        max-width: 95%;
+        /* Ensure it's visible at the top on mobile */
+        position: relative;
+        z-index: 10;
     }
     
     .chat-header {
-        padding: 1.25rem;
+        padding: 1rem;
     }
     
     .hero-chat-container .chat-messages {
-        padding: 1.25rem;
-        max-height: 250px;
+        padding: 1rem;
+        max-height: 200px;
+        min-height: 150px;
     }
     
     .chat-input-container {
-        padding: 1.25rem;
+        padding: 1rem;
     }
     
     .hero-chat-container .message-content {
-        max-width: 85%;
+        max-width: 90%;
+        font-size: 0.9rem;
+        padding: 0.8rem 1rem;
+    }
+    
+    /* Make sure the chat is prominently visible */
+    .hero-chat-container .chat-card {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-chat-container {
+        margin: 0.5rem auto 1.5rem;
+        max-width: 98%;
+    }
+    
+    .hero-chat-container .chat-messages {
+        max-height: 180px;
+        padding: 0.8rem;
+    }
+    
+    .chat-input-container {
+        padding: 0.8rem;
+    }
+    
+    .hero-chat-container .message-content {
+        font-size: 0.85rem;
+        padding: 0.7rem 0.9rem;
     }
 }
 

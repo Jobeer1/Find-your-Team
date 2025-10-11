@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White Title Test</title>
+    <link rel="stylesheet" href="/static/css/find_your_team_base.css">
+    <link rel="stylesheet" href="/static/css/find_your_team_hero.css">
+    <link rel="stylesheet" href="/static/css/text_visibility_fixes.css">
+    <style>
+        /* Test styles to ensure white text */
+        .test-container {
+            background: linear-gradient(135deg, #007A4D 0%, #FFB81C 50%, #007A4D 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .test-title {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            color: #ffffff !important;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div>
+            <h1 class="test-title">Find Your Team</h1>
+            <p style="color: white; text-align: center; font-size: 1.2rem; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">
+                This should be clearly visible in white text
+            </p>
+        </div>
+    </div>
+</body>
+</html>

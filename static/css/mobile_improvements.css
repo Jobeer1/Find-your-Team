@@ -1,0 +1,196 @@
+/* Mobile-First Improvements for Find Your Team */
+
+/* Ensure the page loads with chat visible on mobile */
+@media (max-width: 768px) {
+    /* Smooth scroll behavior for better UX */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Ensure hero content is immediately visible */
+    .hero {
+        scroll-margin-top: 60px;
+    }
+    
+    /* Make the chat interface more prominent on mobile */
+    .hero-chat-container {
+        margin-top: 1rem !important;
+        margin-bottom: 2rem !important;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2) !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    /* Improve chat card visibility */
+    .hero-chat-container .chat-card {
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(15px) !important;
+    }
+    
+    /* Make the welcome message more prominent */
+    #personalized-welcome {
+        background: linear-gradient(135deg, #007A4D, #FFB81C) !important;
+        color: white !important;
+        font-weight: 700 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Improve button visibility on mobile */
+    .hero-cta .btn {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Make status indicator more visible */
+    .status-indicator {
+        background: rgba(255, 255, 255, 0.2) !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Improve navbar on mobile */
+    .navbar {
+        background: rgba(255, 255, 255, 0.98) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Make login buttons less prominent */
+    #guest-nav .btn {
+        opacity: 0.7 !important;
+        font-size: 0.75rem !important;
+        padding: 4px 8px !important;
+    }
+    
+    /* Ensure content doesn't get cut off */
+    .container {
+        padding: 0 15px !important;
+    }
+    
+    /* Improve hero title on mobile */
+    .hero h1 {
+        margin-bottom: 15px !important;
+        line-height: 1.1 !important;
+    }
+    
+    /* Make testimonials more readable on mobile */
+    .testimonial p {
+        font-size: 1rem !important;
+        padding: 10px 15px !important;
+    }
+    
+    .testimonial cite {
+        font-size: 0.85rem !important;
+        padding: 6px 10px !important;
+    }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+    /* Further optimize for very small screens */
+    .hero-chat-container {
+        margin: 0.5rem auto 1.5rem !important;
+        max-width: 98% !important;
+    }
+    
+    .hero-subtitle {
+        padding: 10px !important;
+        font-size: 0.95rem !important;
+    }
+    
+    .hero-stats {
+        margin-top: 15px !important;
+    }
+    
+    .hero-cta {
+        margin-bottom: 15px !important;
+    }
+    
+    /* Make chat messages more readable */
+    .hero-chat-container .message-content {
+        font-size: 0.8rem !important;
+        padding: 0.6rem 0.8rem !important;
+    }
+    
+    /* Optimize input area */
+    .chat-input-container textarea {
+        font-size: 0.9rem !important;
+        padding: 0.8rem !important;
+    }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        min-height: auto !important;
+        padding: 60px 15px 30px !important;
+    }
+    
+    .hero-chat-container {
+        margin: 1rem auto !important;
+    }
+    
+    .hero-stats {
+        margin-top: 20px !important;
+    }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+    /* Larger touch targets */
+    .btn {
+        min-height: 44px !important;
+        min-width: 44px !important;
+    }
+    
+    /* Better focus indicators */
+    .btn:focus,
+    textarea:focus,
+    input:focus {
+        outline: 3px solid rgba(0, 122, 77, 0.5) !important;
+        outline-offset: 2px !important;
+    }
+    
+    /* Improve text readability */
+    .message-content {
+        line-height: 1.5 !important;
+    }
+}
+
+/* Animation improvements for mobile */
+@media (max-width: 768px) {
+    /* Reduce motion for better performance on mobile */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+    
+    /* Optimize animations for mobile */
+    .hero-chat-container .message {
+        animation-duration: 0.2s !important;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px) scale(1.02) !important;
+    }
+    
+    /* Subtle pulse animation to draw attention to chat */
+    .hero-chat-container {
+        animation: subtlePulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes subtlePulse {
+        0%, 100% { 
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+        50% { 
+            box-shadow: 0 15px 45px rgba(0, 122, 77, 0.3);
+        }
+    }
+    
+    /* Stop animation after user interacts */
+    .hero-chat-container.user-interacted {
+        animation: none !important;
+    }
+}
