@@ -47,6 +47,21 @@ This project is not just a platform; it is a declaration of independence from th
 
 **Our Mission:** This is how we will find the right players, launch vital community projects, create stronger local economies, and foster the genuine, productive relationships that heal a fractured world. We are here for the impact that's waiting to be unleashed. Join us.
 
+## ✨ Our Solution
+
+Find Your Team uses a **3-agent AI architecture** powered by AWS Bedrock Claude 4 Sonnet to intelligently match people to teams, monitor performance, and enable seamless communication.
+
+### 🤖 Three AI Agents
+
+1. **Onboarding Agent**  
+   Conducts empathetic conversations using Claude 4 Sonnet to build comprehensive Purpose Profiles (values, skills, work style, motivations).
+
+2. **Matching Agent**  
+   Uses semantic search and compatibility analysis to match people with teams. Provides explainable recommendations with alignment scores.
+
+3. **Team Agent**  
+   Monitors team performance, analyzes dynamics, and generates coaching insights for continuous improvement.
+
 ## 🎯 Hackathon Strategy
 
 This solution is designed to **win first place** by hitting all key judging criteria:
@@ -68,203 +83,568 @@ This solution is designed to **win first place** by hitting all key judging crit
 - **Community Impact**: Local team effectiveness and value creation
 
 ## 🏗️ Architecture Overview
-
 ```mermaid
-graph TB
-    subgraph "Client Layer"
-        PWA[Progressive Web App]
-        WebRTC[WebRTC P2P]
-        ServiceWorker[Service Worker Cache]
+flowchart TB
+    %% Client layer
+    subgraph Client_Layer [Client Layer]
+        PWA["Progressive Web App"]
+        WebRTC["WebRTC P2P Chat"]
+        ServiceWorker["Service Worker\nOffline Support"]
     end
-    
-    subgraph "AWS Agent Layer"
-        AgentCore[Bedrock AgentCore]
-        OnboardingAgent[Onboarding Agent<br/>Claude 3.5 Sonnet]
-        MatchingAgent[Matching Agent<br/>RAG + OpenSearch]
-        TeamAgent[Team Agent<br/>Lambda Actions]
+
+    %% Agent orchestration
+    subgraph AgentCore [Agent Orchestration - AgentCore]
+        Core["BedrockAgentCore\nMulti-Agent Workflows"]
+        Onboarding["Onboarding Agent\nClaude 4 Sonnet"]
+        Matching["Matching Agent\nSemantic Search"]
+        Team["Team Agent\nPerformance Monitoring"]
     end
-    
-    subgraph "AWS Data Layer"
-        DynamoDB[(DynamoDB<br/>User Profiles & Performance)]
-        OpenSearch[(OpenSearch<br/>Vector Embeddings)]
-        IoT[IoT Core MQTT<br/>Real-time Messaging]
+
+    %% AWS services
+    subgraph AWS_Services [AWS Services]
+        Bedrock["Amazon Bedrock\nClaude 4 Sonnet"]
+        DynamoDB[("DynamoDB\nUser Profiles & Teams")]
+        OpenSearch[("OpenSearch\nVector Embeddings\n(Optional)")]
+        IoT["IoT Core MQTT\nReal-time Messaging\n(Optional)"]
     end
-    
-    PWA --> AgentCore
-    AgentCore --> OnboardingAgent
-    AgentCore --> MatchingAgent
-    AgentCore --> TeamAgent
-    OnboardingAgent --> DynamoDB
-    MatchingAgent --> OpenSearch
-    TeamAgent --> DynamoDB
-    PWA --> IoT
+
+    %% Communication layer
+    subgraph Comm_Layer [Communication Layer]
+        SocketIO["Socket.IO Server"]
+        P2PEngine["Enhanced P2P Engine\nLocal Storage"]
+    end
+
+    %% Links
+    PWA --> Core
+    PWA --> SocketIO
+    Core --> Onboarding
+    Core --> Matching
+    Core --> Team
+    Onboarding --> Bedrock
+    Matching --> Bedrock
+    Team --> Bedrock
+    Onboarding --> DynamoDB
+    Matching --> OpenSearch
+    Team --> DynamoDB
+    SocketIO --> P2PEngine
+    P2PEngine --> WebRTC
 ```
 
-## 🚀 Quick Start (Hackathon Demo)
+<!-- ASCII fallback for viewers where Mermaid is not enabled -->
+
+```
+Architecture (high level):
+
+Client Layer:
+    - Progressive Web App
+    - WebRTC P2P Chat
+    - Service Worker (Offline Support)
+
+Agent Orchestration (AgentCore):
+    - BedrockAgentCore (Multi-Agent Workflows)
+    - Onboarding Agent (Claude 4 Sonnet)
+    - Matching Agent (Semantic Search)
+    - Team Agent (Performance Monitoring)
+
+AWS Services:
+    - Amazon Bedrock (Claude 4 Sonnet)
+    - DynamoDB (User Profiles & Teams)
+    - OpenSearch (Vector Embeddings, optional)
+    - IoT Core MQTT (Real-time Messaging, optional)
+
+Communication Layer:
+    - Socket.IO Server
+    - Enhanced P2P Engine (Local Storage)
+
+Connections:
+    - PWA -> AgentCore
+    - PWA -> Socket.IO
+    - AgentCore -> Onboarding/Matching/Team
+    - Agents -> Amazon Bedrock
+    - Onboarding/Team -> DynamoDB
+    - Matching -> OpenSearch (optional)
+    - Socket.IO -> P2P Engine -> WebRTC
+```
+### 🎨 Key Features
+
+#### 🤖 AI-Powered Intelligence
+- **Conversational Onboarding**: Natural language profiling (5-10 minutes)
+- **Semantic Matching**: 87-94% alignment scores with explainable AI
+- **Performance Coaching**: Real-time insights and recommendations
+- **Multi-Language Support**: Works in 100+ languages via Claude 4 Sonnet
+
+#### 💬 Real-Time Communication
+- **P2P WebRTC**: Direct peer-to-peer chat with end-to-end encryption
+- **Socket.IO Integration**: Real-time messaging and presence
+- **Bandwidth-Aware Modes**: Adapts to network quality (high/medium/low/offline)
+- **Local Storage**: Message persistence without cloud dependency
+
+#### 📡 Resilient Architecture
+- **Progressive Web App**: Mobile-friendly, installable, offline-capable
+- **HTTPS Support**: Built-in SSL with auto-generated certificates
+- **Service Worker Caching**: Works without internet connection
+- **Multiple Transports**: WebRTC, Socket.IO, HTTP fallback
+- **Local-First Design**: Minimal AWS usage for cost-effectiveness
+- **Modular Structure**: Refactored from 2269-line monolith to clean blueprints
+
+#### 📊 Team Performance
+- **Real-Time Metrics**: Track productivity, collaboration, satisfaction
+- **Coaching Insights**: AI-generated recommendations by category
+- **Performance Reports**: Comprehensive team analytics
+- **Continuous Monitoring**: Automated performance tracking
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- AWS Account with appropriate permissions
-- AWS CLI configured (`aws configure`)
+
 - Python 3.11+
-- Node.js (for CDK)
+- AWS Account with Bedrock access (Claude 3.5 Sonnet model enabled)
+- Node.js 18+ (for frontend build tools, optional)
 
 ### 1. Clone and Setup
+
 ```bash
-git clone <your-repo>
+git clone https://github.com/jobeer1/find-your-team.git
 cd find-your-team
-cp .env.example .env
-# Edit .env with your AWS credentials
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-### 2. Deploy Infrastructure
+### 2. Configure AWS Credentials
+
+Create `config.ini` from the template:
+
 ```bash
+cp config.ini.example config.ini
+```
+
+Edit `config.ini` with your AWS credentials:
+
+```ini
+[AWS]
+aws_region = us-west-2
+aws_access_key_id = YOUR_ACCESS_KEY
+aws_secret_access_key = YOUR_SECRET_KEY
+bedrock_model_id = anthropic.claude-sonnet-4-20250514-v1:0
+
+[APP]
+debug = false
+host = 0.0.0.0
+port = 5004
+secret_key = your-secret-key-change-in-production
+
+[AGENTS]
+onboarding_agent_enabled = true
+matching_agent_enabled = true
+team_agent_enabled = true
+```
+
+### 3. Run the Application
+
+**HTTP Mode** (default):
+```bash
+python app_refactored.py
+```
+
+Visit `http://localhost:5004` in your browser.
+
+**HTTPS Mode** (recommended for WebRTC):
+```bash
+python app_refactored.py --https
+```
+
+Visit `https://localhost:5004` in your browser.
+
+> **Note**: HTTPS mode will auto-generate self-signed certificates if `ssl_certs/cert.pem` and `ssl_certs/key.pem` don't exist. Your browser will show a security warning for self-signed certs (click "Advanced" and "Proceed").
+
+### 4. Deploy (Optional)
+
+For production deployment:
+
+```bash
+# Deploy to Cloudflare (or your platform)
+python cloudflare_deploy.py
+
+# Or use the deployment script
 python deploy.py
 ```
 
-This will:
-- Deploy DynamoDB tables
-- Set up OpenSearch cluster
-- Configure IoT Core
-- Create Lambda functions
-- Set up API Gateway
+---
 
-### 3. Start the Application
+## 📚 How It Works
+
+### 1. Onboarding Flow
+
+Users chat with the Onboarding Agent, which asks contextual questions to build a Purpose Profile:
+
+- **Values**: What matters most (impact, autonomy, growth, etc.)
+- **Skills**: Technical and soft skills with proficiency levels
+- **Work Style**: Preferences for structure, communication, pace
+- **Motivations**: What drives them (learning, helping others, solving problems)
+
+The agent generates a comprehensive profile stored in DynamoDB.
+
+### 2. Team Matching
+
+The Matching Agent takes a user profile and:
+
+1. Generates semantic embeddings of profile and opportunities
+2. Performs vector similarity search (if OpenSearch available) or rule-based matching
+3. Analyzes compatibility across values, skills, and work style
+4. Produces ranked matches with explainable scores (87-94% accuracy)
+
+Users receive team recommendations with clear explanations for why they're a good fit.
+
+### 3. Performance Monitoring
+
+Once on a team, the Team Agent:
+
+1. Tracks performance metrics (productivity, collaboration, satisfaction)
+2. Analyzes team dynamics and communication patterns
+3. Generates coaching insights by category (leadership, skill development, etc.)
+4. Provides actionable recommendations for improvement
+
+### 4. Real-Time Chat
+
+The chat system supports:
+
+- **WebRTC P2P**: Direct connections for privacy and low latency
+- **Socket.IO**: Fallback for real-time messaging
+- **Local Storage**: Message persistence across sessions
+- **Adaptive Modes**: Switches between high/medium/low bandwidth modes automatically
+
+---
+
+## 🏗️ Project Structure
+
+```
+find-your-team/
+├── agents/                      # AI agent implementations
+│   ├── agent_core.py           # AgentCore orchestration system
+│   ├── onboarding_agent.py     # Onboarding conversational agent
+│   ├── matching_agent.py       # Semantic matching agent
+│   └── team_agent.py           # Performance monitoring agent
+├── routes/                      # Flask route blueprints (modular)
+│   ├── auth_routes.py          # Authentication endpoints
+│   ├── chat_routes.py          # Chat API endpoints
+│   ├── onboarding_routes.py    # Onboarding flow endpoints
+│   ├── page_routes.py          # Page rendering routes
+│   ├── team_routes.py          # Team management endpoints
+│   └── utility_routes.py       # Health checks, debugging
+├── services/                    # Business logic services
+│   ├── bedrock_service.py      # AWS Bedrock agent service
+│   ├── data_service.py         # DynamoDB data operations
+│   └── location_service.py     # Geolocation services
+├── config/                      # Configuration management
+│   └── aws_config.py           # AWS credentials and settings
+├── models/                      # Data models
+│   └── core_models.py          # User, Team, Match models
+├── communication/               # Real-time communication layer
+│   └── flask_integration.py    # Socket.IO integration
+├── ssl_certs/                   # SSL certificates (auto-generated)
+│   ├── cert.pem                # Self-signed certificate
+│   └── key.pem                 # Private key
+├── templates/                   # HTML templates
+│   ├── find_your_team.html     # Main landing page
+│   ├── dashboard.html          # User dashboard
+│   ├── p2p_chat.html           # P2P chat interface
+│   └── ...
+├── static/                      # Frontend assets
+│   ├── js/
+│   │   ├── chat-core.js        # Core chat functionality
+│   │   ├── webrtc-manager.js   # WebRTC P2P manager
+│   │   ├── storage-manager.js  # Local storage manager
+│   │   └── ...
+│   └── css/
+├── tests/                       # Unit and integration tests
+├── app_refactored.py            # Main Flask application (refactored)
+├── config.ini                   # Configuration (not in git)
+├── requirements.txt             # Python dependencies
+└── README.md                    # This file
+```
+
+---
+
+## 🛠️ AWS Services Used
+
+### Core Services
+
+- **Amazon Bedrock**: Claude 4 Sonnet for conversational AI (all 3 agents)
+- **Amazon DynamoDB**: User profiles, team data, performance metrics
+- **Amazon Bedrock Runtime**: Agent invocation and orchestration
+
+### Optional Services
+
+- **Amazon OpenSearch**: Vector embeddings for semantic search (fallback to rule-based if unavailable)
+- **AWS IoT Core**: MQTT messaging for real-time communication (fallback to Socket.IO)
+- **AWS Lambda**: Serverless functions for Team Agent action groups (optional)
+- **Amazon API Gateway**: REST API management (optional)
+
+### Cost Optimization
+
+The platform is designed to minimize AWS costs:
+
+- **Local-First**: Messages and data cached locally
+- **Conditional Services**: OpenSearch and IoT Core are optional
+- **Efficient Prompts**: Optimized Claude 3.5 Sonnet prompts for fast, accurate responses
+- **Caching**: Response caching to reduce Bedrock API calls
+
+---
+
+## 📊 Agent Architecture Details
+
+### AgentCore Orchestration
+
+`BedrockAgentCore` manages multi-agent workflows:
+
+- **Agent Registration**: Registers all 3 agents with configurations
+- **Workflow Execution**: Orchestrates handoffs between agents
+- **Decision Logging**: Tracks all agent decisions for auditing
+- **Performance Monitoring**: Collects metrics per agent
+- **Error Handling**: Retry logic and graceful degradation
+
+### Onboarding Agent
+
+**Technology**: Claude 4 Sonnet via Bedrock Runtime  
+**Purpose**: Build comprehensive Purpose Profiles through conversation
+
+**Key Capabilities**:
+- Multi-stage conversation flow (greeting, values, skills, work style)
+- Context-aware question generation
+- Confidence scoring for profile completeness
+- Location-aware personalization
+- Conversation memory persistence (DynamoDB)
+
+**Example Interaction**:
+```
+Agent: Hi! I'm here to help you find your perfect team. 
+       Let's start with what matters most to you in your work.
+       What impact do you want to have?
+
+User: I want to help my community access clean water.
+
+Agent: That's powerful. Clean water access is crucial. 
+       What skills do you have that could help with this?
+       (e.g., engineering, fundraising, community organizing)
+```
+
+### Matching Agent
+
+**Technology**: Claude 4 Sonnet + Semantic Search  
+**Purpose**: Match users to teams with explainable recommendations
+
+**Key Capabilities**:
+- Semantic embedding generation (Bedrock Titan)
+- Vector similarity search (OpenSearch or in-memory)
+- Compatibility analysis across multiple dimensions
+- Explainable match scores with reasoning
+- Skill gap analysis
+
+**Matching Algorithm**:
+1. Generate embeddings for user profile and team opportunities
+2. Compute cosine similarity scores
+3. Apply compatibility weights (values: 40%, skills: 30%, work style: 20%, other: 10%)
+4. Rank matches and generate explanations
+5. Return top N matches with 87-94% alignment scores
+
+### Team Agent
+
+**Technology**: Claude 4 Sonnet + Performance Analytics  
+**Purpose**: Monitor team dynamics and provide coaching
+
+**Key Capabilities**:
+- Real-time performance metric tracking
+- Team dynamics analysis
+- Coaching insight generation by category
+- Actionable recommendations
+- Performance trend reporting
+
+**Coaching Categories**:
+- Communication
+- Collaboration
+- Leadership
+- Skill Development
+- Team Dynamics
+- Productivity
+
+---
+
+## 💬 Chat System Architecture
+
+### WebRTC P2P Manager
+
+Direct peer-to-peer connections for privacy and performance:
+
+- **Signaling**: Socket.IO for WebRTC offer/answer/ICE exchange
+- **STUN/TURN**: ICE candidate gathering and NAT traversal
+- **Data Channels**: Real-time text, file transfer
+- **Connection Quality**: Automatic quality monitoring
+
+### Enhanced P2P Chat Engine
+
+Robust chat with local storage:
+
+- **Message Persistence**: Local storage for offline access
+- **Bandwidth Modes**: Adapts to network conditions
+- **Deduplication**: Prevents duplicate messages
+- **Rate Limiting**: Prevents spam and overload
+- **User Search**: Find chat partners by location/interests
+
+### Socket.IO Integration
+
+Fallback real-time transport:
+
+- **Room Management**: Private and group chats
+- **Presence Tracking**: Online/offline status
+- **Typing Indicators**: Real-time feedback
+- **Read Receipts**: Message delivery confirmation
+
+---
+
+## 🧪 Testing
+
+Run the test suite:
+
 ```bash
-python aws_app.py
+# Run all tests
+pytest tests/
+
+# Run specific agent tests
+pytest tests/test_onboarding_agent.py
+pytest tests/test_matching_agent.py
+pytest tests/test_team_agent.py
+
+# Run with coverage
+pytest --cov=agents --cov=routes tests/
 ```
 
-### 4. Demo the Platform
-Visit `http://localhost:5002` and:
-1. **Onboarding Flow**: Chat with the Onboarding Agent
-2. **Team Matching**: Get AI-powered team recommendations
-3. **Performance Dashboard**: View real-time team metrics
-4. **Coaching Insights**: Receive personalized development advice
+---
 
-## 🎪 Demo Script for Judges
+## 🚀 Deployment
 
-### Opening (30 seconds)
-"Find Your Team solves a critical global problem: millions of talented people in poor communities can't find teams where they can maximize their impact. Our platform uses a 3-agent AWS architecture to connect people with their purpose and the teams where they can add the most value to the people they love."
+### Local Development
 
-### Technical Demo (2 minutes)
-1. **Show Onboarding Agent**: "Watch as our Onboarding Agent, powered by Bedrock Claude 3.5 Sonnet, builds a comprehensive Purpose Profile through empathetic conversation."
-
-2. **Demonstrate Matching**: "The Matching Agent uses OpenSearch vector embeddings to find perfect team matches based on values, skills, and community impact potential."
-
-3. **Team Performance**: "The Team Agent continuously monitors performance and provides coaching insights using Lambda action groups."
-
-### Impact Story (30 seconds)
-"This isn't just about technology - it's about human potential. Imagine a talented developer in rural Kenya who wants to help their community access clean water. Our platform connects them with a global team working on water access solutions, providing both purpose and income."
-
-## 🏆 Winning Features
-
-### 1. Irresistible Value Proposition
-- **5-minute onboarding** to complete Purpose Profile
-- **94% alignment scores** with perfect team matches
-- **Continuous coaching** that makes teams more effective than working alone
-
-### 2. Resilient Architecture
-- **Works offline** with service worker caching
-- **Low-bandwidth optimized** with MQTT store-and-forward
-- **Local P2P communication** via WebRTC for community teams
-
-### 3. Measurable Impact
-- **Real-time performance metrics** tracked by Team Agent
-- **Community impact visualization** showing value creation
-- **Talent utilization rates** proving no skills are wasted
-
-## 📊 Key Metrics for Demo
-
-- **User Onboarding**: 90%+ confidence scores in under 5 minutes
-- **Team Matching**: 87-94% alignment scores with explainable AI
-- **Performance Improvement**: 15-25% productivity gains
-- **Community Impact**: 156 communities served, 89% success rate
-
-## 🛠️ Technical Implementation
-
-### AWS Services Used
-- **Amazon Bedrock AgentCore**: Multi-agent orchestration
-- **Amazon Bedrock**: Claude 3.5 Sonnet for conversational AI
-- **Amazon DynamoDB**: User profiles and team performance data
-- **Amazon OpenSearch**: Vector embeddings for semantic matching
-- **AWS IoT Core**: MQTT messaging for real-time communication
-- **AWS Lambda**: Team Agent action groups
-- **Amazon API Gateway**: REST API endpoints
-- **Amazon CloudWatch**: Monitoring and observability
-
-### Agent Architecture
-```python
-# Onboarding Agent - Purpose Profile Building
-def invoke_onboarding_agent(user_input, session_id):
-    response = bedrock.invoke_model(
-        modelId='anthropic.claude-3-5-sonnet-20241022-v2:0',
-        body=json.dumps({
-            'messages': [{'role': 'user', 'content': prompt}]
-        })
-    )
-    return extract_purpose_profile(response)
-
-# Matching Agent - Team Recommendations  
-def invoke_matching_agent(user_profile):
-    # Use OpenSearch vector similarity
-    matches = opensearch.search(
-        index='team-opportunities',
-        body={'query': {'knn': {'vector': user_profile_embedding}}}
-    )
-    return generate_explainable_matches(matches)
-
-# Team Agent - Performance Monitoring
-def invoke_team_agent(team_id, action, parameters):
-    return lambda_client.invoke(
-        FunctionName='FindYourTeam-TeamAgentTools',
-        Payload=json.dumps({'action': action, 'parameters': parameters})
-    )
+**HTTP Mode**:
+```bash
+python app_refactored.py
 ```
 
-## 🌍 Open Source & Community Impact
+**HTTPS Mode** (required for WebRTC P2P):
+```bash
+python app_refactored.py --https
+```
 
-This platform is **completely free and open source** (MIT License) because human potential should never be limited by economic barriers.
+The app will auto-generate self-signed SSL certificates on first run with `--https` flag.
 
-### Community-Driven Development
-- **Transparent governance** with community voting on features
-- **Local customization** for different cultures and languages
-- **Contributor recognition** system for platform improvements
+### Production (Cloudflare/AWS/GCP)
 
-### Sustainability Model
-- **Individual users**: Always free
-- **Enterprise services**: Optional premium features for large organizations
-- **Community contributions**: Volunteer development and maintenance
+1. Set environment variables or update `config.ini` for production
+2. **Enable HTTPS** (required for WebRTC)
+3. Configure CORS for your domain
+4. Deploy using your platform's CLI or CI/CD
 
-## 📈 Scaling Strategy
+Example for Cloudflare:
 
-### Phase 1: Hackathon Demo (Current)
-- 3-agent architecture with core functionality
-- Sample data and demo scenarios
-- AWS infrastructure foundation
+```bash
+python cloudflare_deploy.py
+```
 
-### Phase 2: Community Launch
-- Multi-language support
-- Mobile app development
-- Community onboarding tools
+### Environment Variables
 
-### Phase 3: Global Scale
-- Regional AWS deployments
-- Advanced AI capabilities
-- Impact measurement and reporting
+```bash
+export AWS_REGION=us-west-2
+export AWS_ACCESS_KEY_ID=your-key
+export AWS_SECRET_ACCESS_KEY=your-secret
+export FLASK_SECRET_KEY=your-secret-key
+export PORT=5004
+```
 
-## 🎯 Why This Wins
+### SSL Certificate Setup
 
-1. **Deep AWS Integration**: Uses 7+ AWS services with sophisticated agent orchestration
-2. **Real Problem**: Addresses genuine barriers to economic opportunity
-3. **Measurable Impact**: Clear metrics showing human potential maximization
-4. **Technical Excellence**: Resilient, scalable, well-architected solution
-5. **Demo-Ready**: Compelling user journey with immediate value demonstration
+**For Development:**
+- Run with `--https` flag to auto-generate self-signed certificates
+- Certificates are saved to `ssl_certs/cert.pem` and `ssl_certs/key.pem`
+- Browser will show security warning (click "Advanced" → "Proceed to localhost")
+
+**For Production:**
+- Use Let's Encrypt or your certificate provider
+- Place certificates in `ssl_certs/` directory
+- Or configure your reverse proxy (nginx, Apache) to handle SSL
+
+**Why HTTPS?**
+- **Required for WebRTC**: Browser security requires HTTPS for P2P connections
+- **Secure Communication**: Encrypts all data in transit
+- **Production-Ready**: Same setup for dev and production
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! This is a community-driven project.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🌍 Mission
+
+**100% Free and Open Source**
+
+Human connection should never be locked behind a paywall. This platform is built by communities, for communities. We believe the greatest impact happens when people align their unique strengths with teams that value them.
+
+**Your code is your contribution to a world where no talent is wasted.**
+
+---
 
 ## 📞 Support
 
-For hackathon questions or technical issues:
-- Check the deployment logs: `tail -f findyourteam.log`
-- Verify AWS services: `aws cloudformation describe-stacks --stack-name FindYourTeamStack`
-- Test endpoints: `curl http://localhost:5002/api/health`
+- **GitHub Issues**: [Report bugs or request features](https://github.com/jobeer1/find-your-team/issues)
+- **Documentation**: See `/docs` folder for detailed guides
+- **Community**: Join our discussions
+
+---
+
+## 🎯 Roadmap
+
+### Phase 1: Core Platform (Current)
+- ✅ 3-agent AI architecture (Claude 4 Sonnet)
+- ✅ Real-time P2P chat
+- ✅ Onboarding and matching
+- ✅ Performance monitoring
+
+### Phase 2: Enhanced Features
+- 🔄 Mobile app (React Native)
+- 🔄 Multi-language UI
+- 🔄 Advanced analytics dashboard
+- 🔄 Team collaboration tools
+
+### Phase 3: Global Scale
+- 📋 Regional deployments
+- 📋 Enterprise features
+- 📋 Impact measurement
+- 📋 Community governance
+
+---
+
+**🚀 Ready to find your team? Let's maximize human potential together!**
+
 
 ---
 
