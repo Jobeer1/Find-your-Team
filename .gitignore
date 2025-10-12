@@ -8,9 +8,51 @@ __pycache__/
 config.ini
 .env
 config.ini.local
+config.ini.local.*
 *.db
+*.sqlite3
+*.sqlite
 *.wav
 cache/
 cloudflared.exe
 app.exe
 node_modules/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Certificates / keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.der
+*.jks
+
+# Env and credentials
+*.env.*
+credentials.json
+secret-*
+local_settings.py
+
+# Python cache / test
+/.pytest_cache/
+.mypy_cache/
+
+# Logs
+npm-debug.log*
+yarn-error.log
+
+# Backup files
+*.bak
+*.old
+
+# Node / build
+dist/
+build/
+.parcel-cache/
