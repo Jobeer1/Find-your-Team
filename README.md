@@ -103,7 +103,7 @@ graph TB
     end
     
     subgraph AWSServices ["AWS Services"]
-        Bedrock["Amazon Bedrock<br/>Claude 3.5 Sonnet"]
+        Bedrock["Amazon Bedrock<br/>Claude 4 Sonnet"]
         DynamoDB[("DynamoDB<br/>User Profiles & Teams")]
         OpenSearch[("OpenSearch<br/>Vector Embeddings<br/>Optional")]
         IoT["IoT Core MQTT<br/>Real-time Messaging<br/>Optional"]
@@ -187,7 +187,7 @@ sequenceDiagram
     Core->>OA: Start conversation
     
     loop Purpose Profile Building
-        OA->>Bedrock: Generate questions (Claude 3.5)
+        OA->>Bedrock: Generate questions (Claude 4)
         Bedrock-->>OA: Contextual questions
         OA-->>User: Ask about values/skills
         User->>OA: Provide responses
@@ -234,7 +234,7 @@ graph LR
     end
     
     subgraph "AI/ML Layer"
-        Claude[Claude 3.5 Sonnet]
+        Claude[Claude 4 Sonnet]
         Embeddings[Titan Embeddings]
         Search[Vector Search]
     end
