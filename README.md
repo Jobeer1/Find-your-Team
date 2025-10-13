@@ -220,32 +220,33 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    subgraph "Input Layer"
-        UI[User Interface]
-        API[REST API]
-        WS[WebSocket Events]
+    subgraph InputLayer ["Input Layer"]
+        UI["User Interface"]
+        API["REST API"]
+        WS["WebSocket Events"]
     end
     
-    subgraph "Processing Layer"
-        AC[AgentCore Orchestrator]
-        OA[Onboarding Agent]
-        MA[Matching Agent]
-        TA[Team Agent]
+    subgraph ProcessingLayer ["Processing Layer"]
+        AC["AgentCore Orchestrator"]
+        OA["Onboarding Agent"]
+        MA["Matching Agent"]
+        TA["Team Agent"]
     end
     
-    subgraph "AI/ML Layer"
-        Claude[Claude 4 Sonnet]
-        Embeddings[Titan Embeddings]
-        Search[Vector Search]
+    subgraph AILayer ["AI/ML Layer"]
+        Claude["Claude 3.5 Sonnet"]
+        Embeddings["Titan Embeddings"]
+        Search["Vector Search"]
     end
     
-    subgraph "Storage Layer"
-        Profiles[(User Profiles)]
-        Teams[(Team Data)]
-        Vectors[(Vector Index)]
-        Cache[(Local Cache)]
+    subgraph StorageLayer ["Storage Layer"]
+        Profiles[("User Profiles")]
+        Teams[("Team Data")]
+        Vectors[("Vector Index")]
+        Cache[("Local Cache")]
     end
     
+    %% Data flow connections
     UI --> AC
     API --> AC
     WS --> AC
@@ -266,6 +267,18 @@ graph LR
     TA --> Teams
     
     Cache --> UI
+    
+    %% Color styling for different layers
+    classDef input fill:#E3F2FD,stroke:#1976D2,stroke-width:2px,color:#0D47A1
+    classDef processing fill:#E8F5E8,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+    classDef ai fill:#FFF3E0,stroke:#F57C00,stroke-width:2px,color:#E65100
+    classDef storage fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px,color:#4A148C
+    
+    %% Apply styles to nodes
+    class UI,API,WS input
+    class AC,OA,MA,TA processing
+    class Claude,Embeddings,Search ai
+    class Profiles,Teams,Vectors,Cache storage
 ```
 
 ### 🎨 Key Features
