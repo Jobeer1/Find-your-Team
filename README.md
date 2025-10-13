@@ -83,88 +83,191 @@ This solution is designed to **win first place** by hitting all key judging crit
 - **Community Impact**: Local team effectiveness and value creation
 
 ## 🏗️ Architecture Overview
+
+## High-Level Architecture
+
 ```mermaid
-flowchart TB
-    %% Client layer
-    subgraph Client_Layer [Client Layer]
-        PWA["Progressive Web App"]
-        WebRTC["WebRTC P2P Chat"]
-        ServiceWorker["Service Worker\nOffline Support"]
+graph TB
+    subgraph "Client Layer"
+        PWA[Progressive Web App<br/>Offline-First Design]
+        WebRTC[WebRTC P2P Chat<br/>End-to-End Encrypted]
+        ServiceWorker[Service Worker<br/>Offline Caching]
     end
-
-    %% Agent orchestration
-    subgraph AgentCore [Agent Orchestration - AgentCore]
-        Core["BedrockAgentCore\nMulti-Agent Workflows"]
-        Onboarding["Onboarding Agent\nClaude 4 Sonnet"]
-        Matching["Matching Agent\nSemantic Search"]
-        Team["Team Agent\nPerformance Monitoring"]
+    
+    subgraph "Agent Orchestration - BedrockAgentCore"
+        Core[BedrockAgentCore<br/>Multi-Agent Workflows]
+        Onboarding[Onboarding Agent<br/>Purpose Profile Builder]
+        Matching[Matching Agent<br/>Semantic Team Matching]
+        Team[Team Agent<br/>Performance Monitoring]
+        Integration[Integration Agent<br/>API Orchestration]
     end
-
-    %% AWS services
-    subgraph AWS_Services [AWS Services]
-        Bedrock["Amazon Bedrock\nClaude 4 Sonnet"]
-        DynamoDB[("DynamoDB\nUser Profiles & Teams")]
-        OpenSearch[("OpenSearch\nVector Embeddings\n(Optional)")]
-        IoT["IoT Core MQTT\nReal-time Messaging\n(Optional)"]
+    
+    subgraph "AWS Services"
+        Bedrock[Amazon Bedrock<br/>Claude 3.5 Sonnet]
+        DynamoDB[(DynamoDB<br/>User Profiles & Teams)]
+        OpenSearch[(OpenSearch<br/>Vector Embeddings<br/>Optional)]
+        IoT[IoT Core MQTT<br/>Real-time Messaging<br/>Optional)]
+        Lambda[AWS Lambda<br/>Action Groups<br/>Optional)]
     end
-
-    %% Communication layer
-    subgraph Comm_Layer [Communication Layer]
-        SocketIO["Socket.IO Server"]
-        P2PEngine["Enhanced P2P Engine\nLocal Storage"]
+    
+    subgraph "Communication Layer"
+        SocketIO[Socket.IO Server<br/>Real-time Signaling]
+        P2PEngine[Enhanced P2P Engine<br/>Local Storage Manager]
     end
-
-    %% Links
+    
+    subgraph "External Integrations"
+        GitHub[GitHub API]
+        Slack[Slack API]
+        Jira[Jira API]
+        Zoom[Zoom API]
+    end
+    
+    %% Client connections
     PWA --> Core
     PWA --> SocketIO
+    WebRTC --> P2PEngine
+    ServiceWorker --> PWA
+    
+    %% Agent orchestration
     Core --> Onboarding
     Core --> Matching
     Core --> Team
+    Core --> Integration
+    
+    %% AWS service connections
     Onboarding --> Bedrock
     Matching --> Bedrock
     Team --> Bedrock
+    Integration --> Bedrock
+    
     Onboarding --> DynamoDB
-    Matching --> OpenSearch
     Team --> DynamoDB
+    Matching --> OpenSearch
+    Team --> Lambda
+    
+    %% Communication
     SocketIO --> P2PEngine
-    P2PEngine --> WebRTC
+    SocketIO --> IoT
+    
+    %% External integrations
+    Integration --> GitHub
+    Integration --> Slack
+    Integration --> Jira
+    Integration --> Zoom
+    
+    %% Styling
+    classDef aws fill:#FF9900,stroke:#232F3E,stroke-width:2px,color:#fff
+    classDef agent fill:#4CAF50,stroke:#2E7D32,stroke-width:2px,color:#fff
+    classDef client fill:#2196F3,stroke:#1565C0,stroke-width:2px,color:#fff
+    classDef comm fill:#9C27B0,stroke:#6A1B9A,stroke-width:2px,color:#fff
+    classDef external fill:#FF5722,stroke:#D84315,stroke-width:2px,color:#fff
+    
+    class Bedrock,DynamoDB,OpenSearch,IoT,Lambda aws
+    class Core,Onboarding,Matching,Team,Integration agent
+    class PWA,WebRTC,ServiceWorker client
+    class SocketIO,P2PEngine comm
+    class GitHub,Slack,Jira,Zoom external
 ```
 
-<!-- ASCII fallback for viewers where Mermaid is not enabled -->
+## Agent Workflow Diagram
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant PWA as Progressive Web App
+    participant Core as BedrockAgentCore
+    participant OA as Onboarding Agent
+    participant MA as Matching Agent
+    participant TA as Team Agent
+    participant Bedrock as Amazon Bedrock
+    participant DB as DynamoDB
+    
+    User->>PWA: Start onboarding
+    PWA->>Core: Initialize workflow
+    Core->>OA: Start conversation
+    
+    loop Purpose Profile Building
+        OA->>Bedrock: Generate questions (Claude 3.5)
+        Bedrock-->>OA: Contextual questions
+        OA-->>User: Ask about values/skills
+        User->>OA: Provide responses
+        OA->>DB: Store profile data
+    end
+    
+    OA->>Core: Profile complete (confidence ≥90%)
+    Core->>MA: Handoff to matching
+    
+    MA->>Bedrock: Generate embeddings
+    MA->>OpenSearch: Vector similarity search
+    OpenSearch-->>MA: Similar teams
+    MA->>Bedrock: Generate explanations
+    Bedrock-->>MA: Match reasoning
+    MA-->>User: Recommended teams
+    
+    User->>PWA: Join team
+    PWA->>Core: Team joined
+    Core->>TA: Monitor performance
+    
+    loop Continuous Monitoring
+        TA->>DB: Collect metrics
+        TA->>Bedrock: Analyze performance
+        Bedrock-->>TA: Coaching insights
+        TA-->>User: Performance feedback
+    end
 ```
-Architecture (high level):
 
-Client Layer:
-    - Progressive Web App
-    - WebRTC P2P Chat
-    - Service Worker (Offline Support)
+## Data Flow Architecture
 
-Agent Orchestration (AgentCore):
-    - BedrockAgentCore (Multi-Agent Workflows)
-    - Onboarding Agent (Claude 4 Sonnet)
-    - Matching Agent (Semantic Search)
-    - Team Agent (Performance Monitoring)
-
-AWS Services:
-    - Amazon Bedrock (Claude 4 Sonnet)
-    - DynamoDB (User Profiles & Teams)
-    - OpenSearch (Vector Embeddings, optional)
-    - IoT Core MQTT (Real-time Messaging, optional)
-
-Communication Layer:
-    - Socket.IO Server
-    - Enhanced P2P Engine (Local Storage)
-
-Connections:
-    - PWA -> AgentCore
-    - PWA -> Socket.IO
-    - AgentCore -> Onboarding/Matching/Team
-    - Agents -> Amazon Bedrock
-    - Onboarding/Team -> DynamoDB
-    - Matching -> OpenSearch (optional)
-    - Socket.IO -> P2P Engine -> WebRTC
+```mermaid
+graph LR
+    subgraph "Input Layer"
+        UI[User Interface]
+        API[REST API]
+        WS[WebSocket Events]
+    end
+    
+    subgraph "Processing Layer"
+        AC[AgentCore Orchestrator]
+        OA[Onboarding Agent]
+        MA[Matching Agent]
+        TA[Team Agent]
+    end
+    
+    subgraph "AI/ML Layer"
+        Claude[Claude 3.5 Sonnet]
+        Embeddings[Titan Embeddings]
+        Search[Vector Search]
+    end
+    
+    subgraph "Storage Layer"
+        Profiles[(User Profiles)]
+        Teams[(Team Data)]
+        Vectors[(Vector Index)]
+        Cache[(Local Cache)]
+    end
+    
+    UI --> AC
+    API --> AC
+    WS --> AC
+    
+    AC --> OA
+    AC --> MA
+    AC --> TA
+    
+    OA --> Claude
+    MA --> Claude
+    MA --> Embeddings
+    MA --> Search
+    TA --> Claude
+    
+    OA --> Profiles
+    MA --> Teams
+    MA --> Vectors
+    TA --> Teams
+    
+    Cache --> UI
 ```
+
 ### 🎨 Key Features
 
 #### 🤖 AI-Powered Intelligence
