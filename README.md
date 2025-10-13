@@ -234,7 +234,7 @@ graph LR
     end
     
     subgraph AILayer ["AI/ML Layer"]
-        Claude["Claude 3.5 Sonnet"]
+        Claude["Claude 4 Sonnet"]
         Embeddings["Titan Embeddings"]
         Search["Vector Search"]
     end
