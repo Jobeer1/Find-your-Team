@@ -88,38 +88,38 @@ This solution is designed to **win first place** by hitting all key judging crit
 
 ```mermaid
 graph TB
-    subgraph "Client Layer"
-        PWA[Progressive Web App<br/>Offline-First Design]
-        WebRTC[WebRTC P2P Chat<br/>End-to-End Encrypted]
-        ServiceWorker[Service Worker<br/>Offline Caching]
+    subgraph ClientLayer ["Client Layer"]
+        PWA["Progressive Web App<br/>Offline-First Design"]
+        WebRTC["WebRTC P2P Chat<br/>End-to-End Encrypted"]
+        ServiceWorker["Service Worker<br/>Offline Caching"]
     end
     
-    subgraph "Agent Orchestration - BedrockAgentCore"
-        Core[BedrockAgentCore<br/>Multi-Agent Workflows]
-        Onboarding[Onboarding Agent<br/>Purpose Profile Builder]
-        Matching[Matching Agent<br/>Semantic Team Matching]
-        Team[Team Agent<br/>Performance Monitoring]
-        Integration[Integration Agent<br/>API Orchestration]
+    subgraph AgentCore ["Agent Orchestration - BedrockAgentCore"]
+        Core["BedrockAgentCore<br/>Multi-Agent Workflows"]
+        Onboarding["Onboarding Agent<br/>Purpose Profile Builder"]
+        Matching["Matching Agent<br/>Semantic Team Matching"]
+        Team["Team Agent<br/>Performance Monitoring"]
+        Integration["Integration Agent<br/>API Orchestration"]
     end
     
-    subgraph "AWS Services"
-        Bedrock[Amazon Bedrock<br/>Claude 3.5 Sonnet]
-        DynamoDB[(DynamoDB<br/>User Profiles & Teams)]
-        OpenSearch[(OpenSearch<br/>Vector Embeddings<br/>Optional)]
-        IoT[IoT Core MQTT<br/>Real-time Messaging<br/>Optional)]
-        Lambda[AWS Lambda<br/>Action Groups<br/>Optional)]
+    subgraph AWSServices ["AWS Services"]
+        Bedrock["Amazon Bedrock<br/>Claude 3.5 Sonnet"]
+        DynamoDB[("DynamoDB<br/>User Profiles & Teams")]
+        OpenSearch[("OpenSearch<br/>Vector Embeddings<br/>Optional")]
+        IoT["IoT Core MQTT<br/>Real-time Messaging<br/>Optional"]
+        Lambda["AWS Lambda<br/>Action Groups<br/>Optional"]
     end
     
-    subgraph "Communication Layer"
-        SocketIO[Socket.IO Server<br/>Real-time Signaling]
-        P2PEngine[Enhanced P2P Engine<br/>Local Storage Manager]
+    subgraph CommLayer ["Communication Layer"]
+        SocketIO["Socket.IO Server<br/>Real-time Signaling"]
+        P2PEngine["Enhanced P2P Engine<br/>Local Storage Manager"]
     end
     
-    subgraph "External Integrations"
-        GitHub[GitHub API]
-        Slack[Slack API]
-        Jira[Jira API]
-        Zoom[Zoom API]
+    subgraph ExternalIntegrations ["External Integrations"]
+        GitHub["GitHub API"]
+        Slack["Slack API"]
+        Jira["Jira API"]
+        Zoom["Zoom API"]
     end
     
     %% Client connections
